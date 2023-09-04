@@ -1,0 +1,20 @@
+name: Sync to Hugging Face Space
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push to hub
+        run: git push --force https://$HF_USERNAME:$HF_TOKEN@$HF_SPACE main
+        env:
+          HF_USERNAME: ${{ vars.HUGGING_FACE_USERNAME }}
+          HF_SPACE: ${{ vars.HUGGING_FACE_SPACE }}
+          HF_TOKEN: ${{ secrets.HUGGING_FACE_SYNC_TOKEN }}

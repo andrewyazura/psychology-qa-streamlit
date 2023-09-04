@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "psychology-qa"
+version = "0.1.0"
+description = ""
+authors = ["Andrew Yatsura <andrewyazura203@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "psychology_qa" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+streamlit = "^1.26.0"
+farm-haystack = { extras = [
+    "docstores",
+    "file-conversion",
+    "inference",
+    "ocr",
+    "preprocessing",
+], version = "^1.20.0" }
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+ruff = "^0.0.287"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
