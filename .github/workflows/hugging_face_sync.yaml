@@ -13,7 +13,7 @@ jobs:
           lfs: true
 
       - name: Push to hub
-        run: git push --force https://$HF_USERNAME:$HF_TOKEN@$HF_SPACE main
+        run: git push --force "https://$HF_USERNAME:$HF_TOKEN@$HF_SPACE" main
         env:
           HF_USERNAME: ${{ vars.HUGGING_FACE_USERNAME }}
           HF_SPACE: ${{ vars.HUGGING_FACE_SPACE }}
