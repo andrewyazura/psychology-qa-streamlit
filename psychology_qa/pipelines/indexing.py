@@ -57,7 +57,6 @@ def get_indexing_pipeline(language: str) -> Pipeline:
         pipe.add_node(
             component=TransformersTranslator(
                 model_name_or_path=f"Helsinki-NLP/opus-mt-{language}-en",
-                use_gpu=False,
             ),
             name="TransformersTranslator",
             inputs=["CustomPreProcessor"],
