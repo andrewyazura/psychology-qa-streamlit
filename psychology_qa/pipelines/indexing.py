@@ -12,7 +12,6 @@ from pipelines.preprocessor import CustomPreProcessor
 
 def get_indexing_pipeline(language: str) -> Pipeline:
     converter_kwargs = {
-        "progress_bar": False,
         "remove_numeric_tables": True,
         "valid_languages": [language],
     }
