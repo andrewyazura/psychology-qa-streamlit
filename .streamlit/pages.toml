@@ -1,5 +1,5 @@
 [[pages]]
-path = "psychology_qa/main.py"
+path = "psychology_qa/app.py"
 name = "Psychology Q&A"
 icon = ":brain:"
 

@@ -1,0 +1,12 @@
+credentials:
+  usernames:
+    andrewyazura:
+      name: "Andrew"
+      password: "$2b$12$mvhASYJG205YxLhEMbtbXetviPuDRqL1VAQeQQ.YS0WoOM6SVA7G6"
+
+cookie_name: "psychology_qa_cookie"
+key: "2da9c7044288314be996189227ef7572"
+cookie_expiry_days: 1
+
+preauthorized:
+  emails:
