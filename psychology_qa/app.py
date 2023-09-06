@@ -1,8 +1,7 @@
-import streamlit as st
+from authenticator import display_authentication_controls
+from st_pages import add_page_title, show_pages_from_config
 
-st.set_page_config(
-    page_title="Psychology Q&A",
-    page_icon="🧠",
-)
 
-st.write("# Welcome to Psychology Q&A 🧠")
+add_page_title()
+show_pages_from_config()
+display_authentication_controls()

@@ -1,0 +1,14 @@
+credentials:
+  usernames:
+    username:
+      email: "user@email.com"
+      name: "Name Surname"
+      password: "passwordhash123"
+
+cookie_name: "cookie_name"
+key: "key"
+cookie_expiry_days: 30
+
+preauthorized:
+  emails:
+    - "user@email.com"

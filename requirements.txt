@@ -1,0 +1,10 @@
+streamlit
+streamlit-authenticator
+st-pages
+
+transformers
+librosa
+
+farm-haystack[ocr,preprocessing,file-conversion,pdf]
+sentencepiece
+sacremoses

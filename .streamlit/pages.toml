@@ -1,0 +1,14 @@
+[[pages]]
+path = "psychology_qa/main.py"
+name = "Psychology Q&A"
+icon = ":brain:"
+
+[[pages]]
+path = "psychology_qa/pages/upload_book.py"
+name = "Upload a book"
+icon = ":book:"
+
+[[pages]]
+path = "psychology_qa/pages/upload_audio.py"
+name = "Upload an audiobook"
+icon = ":headphones:"

@@ -3,8 +3,10 @@ on:
   push:
     branches: [main]
 
+  workflow_dispatch:
+
 jobs:
-  sync-to-hub:
+  sync-to-hugging-face:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -12,7 +14,7 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      - name: Push to hub
+      - name: Push to hugging face
         run: git push --force "https://$HF_USERNAME:$HF_TOKEN@$HF_SPACE" main
         env:
           HF_USERNAME: ${{ vars.HUGGING_FACE_USERNAME }}
