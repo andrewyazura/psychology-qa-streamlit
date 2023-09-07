@@ -5,6 +5,7 @@ import streamlit as st
 from st_pages import add_page_title, show_pages_from_config
 
 from authenticator import display_authentication_controls
+from constants import LANGUAGES
 from pipelines.processing import get_processing_pipeline
 from pipelines.translate import translate
 
@@ -14,9 +15,6 @@ if TYPE_CHECKING:
 add_page_title()
 show_pages_from_config()
 display_authentication_controls()
-
-
-LANGUAGES = ("en", "ru")
 
 files_form = st.empty()
 

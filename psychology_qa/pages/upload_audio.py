@@ -1,13 +1,13 @@
 import tempfile
 from typing import TYPE_CHECKING
 
-import librosa
+import librosa as lr
 import streamlit as st
-import torch
 from st_pages import add_page_title, show_pages_from_config
 from transformers import pipeline
 
 from authenticator import display_authentication_controls
+from constants import LANGUAGES, SAMPLE_RATE, WHISPER_MODELS
 from pipelines.processing import get_processing_pipeline
 from pipelines.translate import translate
 
@@ -18,28 +18,11 @@ add_page_title()
 show_pages_from_config()
 display_authentication_controls()
 
-LANGUAGES = (
-    "en",
-    "ru",
-)
-
-MODELS = (
-    "openai/whisper-tiny",
-    "openai/whisper-base",
-    "openai/whisper-small",
-    "openai/whisper-medium",
-    "openai/whisper-large",
-    "openai/whisper-large-v2",
-)
-
-SAMPLE_RATE = 16_000
-
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
 files_form = st.empty()
 
 with files_form.form("files"):
     language = st.selectbox("Select language of the audiobook", LANGUAGES)
-    model_name = st.selectbox("Select a whisper model", MODELS)
+    model_name = st.selectbox("Select a whisper model", WHISPER_MODELS)
 
     files: list["UploadedFile"] = st.file_uploader(
         "Upload an audiobook (multiple files allowed)",
@@ -60,7 +43,7 @@ if files_submitted:
         whisper = pipeline(
             task="automatic-speech-recognition",
             model=model_name,
-            device=device,
+            device_map="auto",
             chunk_length_s=30,
         )
 
@@ -70,7 +53,7 @@ if files_submitted:
     with tempfile.NamedTemporaryFile() as temp:
         for i, file in enumerate(reversed(files)):
             bar.progress(i / len(files), text=f"Transcribing {i}/{len(files)}")
-            audio, _ = librosa.load(file, sr=SAMPLE_RATE)
+            audio, _ = lr.load(file, sr=SAMPLE_RATE)
 
             result = whisper(
                 audio,
