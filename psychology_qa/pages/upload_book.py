@@ -36,13 +36,13 @@ if files_submitted:
         st.stop()
 
     files_form.empty()
-    pipeline = get_processing_pipeline(language)
+    pipe = get_processing_pipeline(language)
 
     with tempfile.NamedTemporaryFile() as temp:
         temp.write(file.read())
-        temp.seek(0)
 
-        documents = pipeline.run(file_paths=[temp.name])["documents"]
+        with st.spinner("Processing text..."):
+            documents = pipe.run(file_paths=[temp.name])["documents"]
 
     if language != "en":
         documents = translate(language, "en", documents)

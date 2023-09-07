@@ -56,8 +56,8 @@ if files_submitted:
 
     files_form.empty()
 
-    with st.spinner("Loading requested model..."):
-        pipe = pipeline(
+    with st.spinner("Loading Whisper model..."):
+        whisper = pipeline(
             task="automatic-speech-recognition",
             model=model_name,
             device=device,
@@ -72,7 +72,7 @@ if files_submitted:
             bar.progress(i / len(files), text=f"Transcribing {i}/{len(files)}")
             audio, _ = librosa.load(file, sr=SAMPLE_RATE)
 
-            result = pipe(
+            result = whisper(
                 audio,
                 generate_kwargs={
                     "task": "transcribe",
@@ -85,8 +85,9 @@ if files_submitted:
         bar.progress(1.0, text="Transcriptions done!")
         bar.empty()
 
-        pipeline = get_processing_pipeline(language)
-        documents = pipeline.run(file_paths=[temp.name])["documents"]
+        with st.spinner("Processing text..."):
+            pipe = get_processing_pipeline(language)
+            documents = pipe.run(file_paths=[temp.name])["documents"]
 
     if language != "en":
         documents = translate(language, "en", documents)
