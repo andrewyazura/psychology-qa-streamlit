@@ -2,9 +2,11 @@ import tempfile
 from typing import TYPE_CHECKING
 
 import streamlit as st
-from authenticator import display_authentication_controls
-from pipelines.indexing import get_indexing_pipeline
 from st_pages import add_page_title, show_pages_from_config
+
+from authenticator import display_authentication_controls
+from pipelines.processing import get_processing_pipeline
+from pipelines.translate import translate
 
 if TYPE_CHECKING:
     from streamlit.runtime.uploaded_file_manager import UploadedFile
@@ -34,12 +36,15 @@ if files_submitted:
         st.stop()
 
     files_form.empty()
-    pipeline = get_indexing_pipeline(language)
+    pipeline = get_processing_pipeline(language)
 
-    with tempfile.NamedTemporaryFile() as fp:
-        fp.write(file.read())
-        fp.seek(0)
+    with tempfile.NamedTemporaryFile() as temp:
+        temp.write(file.read())
+        temp.seek(0)
 
-        result = pipeline.run(file_paths=[fp.name])
+        documents = pipeline.run(file_paths=[temp.name])["documents"]
 
-    st.json(result)
+    if language != "en":
+        documents = translate(language, "en", documents)
+
+    st.json(documents)

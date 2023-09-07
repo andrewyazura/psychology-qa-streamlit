@@ -3,14 +3,14 @@ from haystack.nodes import (
     FileTypeClassifier,
     MarkdownConverter,
     PDFToTextConverter,
-    TransformersTranslator,
     TextConverter,
 )
 from haystack.pipelines import Pipeline
+
 from pipelines.preprocessor import CustomPreProcessor
 
 
-def get_indexing_pipeline(language: str) -> Pipeline:
+def get_processing_pipeline(language: str) -> Pipeline:
     converter_kwargs = {
         "remove_numeric_tables": True,
         "valid_languages": [language],
@@ -33,17 +33,27 @@ def get_indexing_pipeline(language: str) -> Pipeline:
         inputs=["FileTypeClassifier.output_2"],
     )
     pipe.add_node(
-        component=MarkdownConverter(**converter_kwargs),
+        component=MarkdownConverter(
+            **converter_kwargs,
+        ),
         name="MarkdownConverter",
         inputs=["FileTypeClassifier.output_3"],
     )
     pipe.add_node(
-        component=DocxToTextConverter(**converter_kwargs),
+        component=DocxToTextConverter(
+            **converter_kwargs,
+        ),
         name="DocxToTextConverter",
         inputs=["FileTypeClassifier.output_4"],
     )
     pipe.add_node(
-        component=CustomPreProcessor(language=language),
+        component=CustomPreProcessor(
+            language=language,
+            split_by="sentence",
+            split_length=1,
+            split_overlap=0,
+            respect_sentence=False,
+        ),
         name="CustomPreProcessor",
         inputs=[
             "TextConverter",
@@ -52,14 +62,5 @@ def get_indexing_pipeline(language: str) -> Pipeline:
             "DocxToTextConverter",
         ],
     )
-
-    if language not in ("en",):
-        pipe.add_node(
-            component=TransformersTranslator(
-                model_name_or_path=f"Helsinki-NLP/opus-mt-{language}-en",
-            ),
-            name="TransformersTranslator",
-            inputs=["CustomPreProcessor"],
-        )
 
     return pipe
