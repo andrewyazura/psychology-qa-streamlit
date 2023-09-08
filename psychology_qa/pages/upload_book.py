@@ -6,7 +6,6 @@ from st_pages import add_page_title, show_pages_from_config
 
 from authenticator import display_authentication_controls
 from constants import LANGUAGES
-from pipelines.processing import get_processing_pipeline
 
 if TYPE_CHECKING:
     from streamlit.runtime.uploaded_file_manager import UploadedFile
@@ -27,18 +26,22 @@ with files_form.form("files"):
 
     files_submitted = st.form_submit_button("Upload", use_container_width=True)
 
-if files_submitted:
-    if file is None:
-        st.error("File is required")
-        st.stop()
+if not files_submitted:
+    st.stop()
 
-    files_form.empty()
-    pipe = get_processing_pipeline(language)
+if file is None:
+    st.error("File is required")
+    st.stop()
 
-    with tempfile.NamedTemporaryFile(suffix=file.name) as temp:
-        temp.write(file.read())
+files_form.empty()
 
-        with st.spinner("Processing text..."):
-            documents = pipe.run(file_paths=[temp.name])["documents"]
+with tempfile.NamedTemporaryFile(suffix=file.name) as temp:
+    temp.write(file.read())
 
-    st.json(documents)
+    with st.spinner("Processing text..."):
+        from pipelines.processing import get_processing_pipeline
+
+        pipe = get_processing_pipeline(language)
+        documents = pipe.run(file_paths=[temp.name])["documents"]
+
+st.json(documents)

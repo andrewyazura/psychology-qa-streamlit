@@ -33,16 +33,12 @@ def get_processing_pipeline(language: str) -> Pipeline:
         inputs=["FileTypeClassifier.output_2"],
     )
     pipe.add_node(
-        component=MarkdownConverter(
-            **converter_kwargs,
-        ),
+        component=MarkdownConverter(**converter_kwargs),
         name="MarkdownConverter",
         inputs=["FileTypeClassifier.output_3"],
     )
     pipe.add_node(
-        component=DocxToTextConverter(
-            **converter_kwargs,
-        ),
+        component=DocxToTextConverter(**converter_kwargs),
         name="DocxToTextConverter",
         inputs=["FileTypeClassifier.output_4"],
     )
@@ -50,8 +46,8 @@ def get_processing_pipeline(language: str) -> Pipeline:
         component=CustomPreProcessor(
             language=language,
             split_by="sentence",
-            split_length=2,
-            split_overlap=1,
+            split_length=1,
+            split_overlap=0,
             respect_sentence=False,
         ),
         name="PreProcessor",
