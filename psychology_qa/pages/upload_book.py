@@ -7,7 +7,6 @@ from st_pages import add_page_title, show_pages_from_config
 from authenticator import display_authentication_controls
 from constants import LANGUAGES
 from pipelines.processing import get_processing_pipeline
-from pipelines.translate import translate
 
 if TYPE_CHECKING:
     from streamlit.runtime.uploaded_file_manager import UploadedFile
@@ -36,13 +35,10 @@ if files_submitted:
     files_form.empty()
     pipe = get_processing_pipeline(language)
 
-    with tempfile.NamedTemporaryFile() as temp:
+    with tempfile.NamedTemporaryFile(suffix=file.name) as temp:
         temp.write(file.read())
 
         with st.spinner("Processing text..."):
             documents = pipe.run(file_paths=[temp.name])["documents"]
-
-    if language != "en":
-        documents = translate(language, "en", documents)
 
     st.json(documents)

@@ -1,7 +1,5 @@
-LANGUAGES = (
-    "en",
-    "ru",
-)
+LANGUAGES = ("en", "ru")
+SAMPLE_RATE = 16_000
 
 WHISPER_MODELS = (
     "openai/whisper-tiny",
@@ -11,5 +9,3 @@ WHISPER_MODELS = (
     "openai/whisper-large",
     "openai/whisper-large-v2",
 )
-
-SAMPLE_RATE = 16_000

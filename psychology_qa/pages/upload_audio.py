@@ -9,7 +9,6 @@ from transformers import pipeline
 from authenticator import display_authentication_controls
 from constants import LANGUAGES, SAMPLE_RATE, WHISPER_MODELS
 from pipelines.processing import get_processing_pipeline
-from pipelines.translate import translate
 
 if TYPE_CHECKING:
     from streamlit.runtime.uploaded_file_manager import UploadedFile
@@ -50,7 +49,7 @@ if files_submitted:
     bar = st.empty()
     bar.progress(0.0, text="Transcribing files")
 
-    with tempfile.NamedTemporaryFile() as temp:
+    with tempfile.NamedTemporaryFile(suffix=".txt") as temp:
         for i, file in enumerate(reversed(files)):
             bar.progress(i / len(files), text=f"Transcribing {i}/{len(files)}")
             audio, _ = lr.load(file, sr=SAMPLE_RATE)
@@ -71,8 +70,5 @@ if files_submitted:
         with st.spinner("Processing text..."):
             pipe = get_processing_pipeline(language)
             documents = pipe.run(file_paths=[temp.name])["documents"]
-
-    if language != "en":
-        documents = translate(language, "en", documents)
 
     st.json(documents)

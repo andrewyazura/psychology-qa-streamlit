@@ -6,8 +6,8 @@ from haystack.nodes import (
     TextConverter,
 )
 from haystack.pipelines import Pipeline
-
-from pipelines.preprocessor import CustomPreProcessor
+from pipelines.custom_preprocessor import CustomPreProcessor
+from pipelines.iterative_translator import CustomIterativeTranslator
 
 
 def get_processing_pipeline(language: str) -> Pipeline:
@@ -50,11 +50,11 @@ def get_processing_pipeline(language: str) -> Pipeline:
         component=CustomPreProcessor(
             language=language,
             split_by="sentence",
-            split_length=1,
-            split_overlap=0,
+            split_length=2,
+            split_overlap=1,
             respect_sentence=False,
         ),
-        name="CustomPreProcessor",
+        name="PreProcessor",
         inputs=[
             "TextConverter",
             "PDFToTextConverter",
@@ -62,5 +62,15 @@ def get_processing_pipeline(language: str) -> Pipeline:
             "DocxToTextConverter",
         ],
     )
+
+    if language != "en":
+        pipe.add_node(
+            component=CustomIterativeTranslator(
+                from_language=language,
+                to_language="en",
+            ),
+            name="Translator",
+            inputs=["PreProcessor"],
+        )
 
     return pipe
