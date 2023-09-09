@@ -20,7 +20,21 @@ for message in st.session_state["messages"]:
     display_message(message)
 
 if query := st.chat_input("Ask a psychology-related question"):
-    message = {"role": "user", "content": query}
+    messages = [{"role": "user", "content": query}]
 
-    display_message(message)
-    st.session_state["messages"].append(message)
+    with st.spinner("Searching for answers..."):
+        from pipelines.querying import get_querying_pipeline
+
+        pipe = get_querying_pipeline(top_k=3)
+        documents = pipe.run(query=query)
+
+    if not documents:
+        messages.append({"role": "assistant", "content": "Nothing found..."})
+
+    for document in documents:
+        messages.append({"role": "assistant", "content": document.content})
+
+    for message in messages:
+        display_message(message)
+
+    st.session_state["messages"].extend(messages)
