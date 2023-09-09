@@ -42,7 +42,7 @@ if query := st.chat_input("Ask a psychology-related question"):
     for document in documents:
         messages.append({"role": "assistant", "content": document.content})
 
-    for message in messages:
+    for message in messages[1:]:
         display_message(message)
 
     st.session_state["messages"].extend(messages)

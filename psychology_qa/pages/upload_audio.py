@@ -3,10 +3,9 @@ from typing import TYPE_CHECKING
 
 import librosa as lr
 import streamlit as st
-from st_pages import add_page_title, show_pages_from_config
-
 from authenticator import display_authentication_controls
 from constants import LANGUAGES, SAMPLE_RATE, WHISPER_MODELS
+from st_pages import add_page_title, show_pages_from_config
 
 if TYPE_CHECKING:
     from streamlit.runtime.uploaded_file_manager import UploadedFile
@@ -39,14 +38,9 @@ if not files:
 files_form.empty()
 
 with st.spinner("Loading Whisper model..."):
-    from transformers import pipeline
+    from pipelines.whisper import get_whisper_pipeline
 
-    whisper = pipeline(
-        task="automatic-speech-recognition",
-        model=model_name,
-        device_map="auto",
-        chunk_length_s=30,
-    )
+    whisper = get_whisper_pipeline(model_name)
 
 bar = st.empty()
 bar.progress(0.0, text="Transcribing files")
