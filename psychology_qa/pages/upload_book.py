@@ -42,6 +42,6 @@ with tempfile.NamedTemporaryFile(suffix=file.name) as temp:
         from pipelines.processing import get_processing_pipeline
 
         pipe = get_processing_pipeline(language)
-        documents = pipe.run(file_paths=[temp.name])["documents"]
+        documents = pipe.run(file_paths=[temp.name])
 
 st.json(documents)

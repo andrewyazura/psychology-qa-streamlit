@@ -7,9 +7,20 @@ add_page_title()
 show_pages_from_config()
 display_authentication_controls()
 
-query = st.chat_input("Ask a psychology-related question")
 
-if not query:
-    st.stop()
+def display_message(message: dict[str, str]) -> None:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-st.write(query)
+
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
+
+for message in st.session_state["messages"]:
+    display_message(message)
+
+if query := st.chat_input("Ask a psychology-related question"):
+    message = {"role": "user", "content": query}
+
+    display_message(message)
+    st.session_state["messages"].append(message)
