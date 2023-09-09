@@ -1,0 +1,28 @@
+services:
+  streamlit-app:
+    build: .
+    ports:
+      - 8501:8501
+    volumes:
+      - ~/.cache/huggingface/hub:/home/user/.cache/huggingface/hub:rw
+    environment:
+      - PYTHONUNBUFFERED=true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  postgres:
+    image: postgres:15.4-bookworm
+    volumes:
+      - psychology_qa_postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=psychology_qa
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=password
+
+volumes:
+  psychology_qa_postgres:
