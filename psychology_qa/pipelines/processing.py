@@ -4,12 +4,12 @@ from haystack.nodes import (
     MarkdownConverter,
     PDFToTextConverter,
     TextConverter,
-    EmbeddingRetriever,
 )
 from haystack.pipelines import Pipeline
+from pipelines.custom_faiss_store import CustomFAISSDocumentStore
 from pipelines.custom_preprocessor import CustomPreProcessor
+from pipelines.embedding import get_embedding_retriever
 from pipelines.iterative_translator import CustomIterativeTranslator
-from database import get_database, get_vector_store
 
 
 def get_processing_pipeline(language: str) -> Pipeline:
@@ -80,24 +80,11 @@ def get_processing_pipeline(language: str) -> Pipeline:
         )
 
     pipe.add_node(
-        component=EmbeddingRetriever(
-            embedding_model="sentence-transformers/multi-qa-mpnet-base-dot-v1",
-            model_format="sentence_transformers",
+        component=CustomFAISSDocumentStore(
+            retriever=get_embedding_retriever()
         ),
-        name="EmbeddingRetriever",
-        inputs=[last_node],
-    )
-
-    pipe.add_node(
-        component=get_database(),
-        name="SQLDocumentStore",
-        inputs=["PreProcessor"],
-    )
-
-    pipe.add_node(
-        components=get_vector_store(),
         name="FAISSDocumentStore",
-        inputs=["EmbeddingRetriever"],
+        inputs=[last_node],
     )
 
     return pipe
