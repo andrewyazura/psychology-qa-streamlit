@@ -7,11 +7,10 @@ if TYPE_CHECKING:
 
 
 def get_embedding_retriever(
-    document_store: "BaseDocumentStore" = None, top_k: int = 10
+    document_store: "BaseDocumentStore" = None,
 ) -> EmbeddingRetriever:
     return EmbeddingRetriever(
         embedding_model="sentence-transformers/multi-qa-mpnet-base-dot-v1",
         model_format="sentence_transformers",
         document_store=document_store,
-        top_k=top_k,
     )

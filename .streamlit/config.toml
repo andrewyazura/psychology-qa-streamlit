@@ -1,6 +1,15 @@
+[logger]
+level = "debug"
+
 [server]
 port = 8501
+headless = true
+fileWatcherType = "none"
 
 [browser]
 serverPort = 8501
 gatherUsageStats = false
+
+[theme]
+primaryColor = "#0000ff"
+font = "sans serif"
