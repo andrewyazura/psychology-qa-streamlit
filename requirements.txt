@@ -1,15 +1,9 @@
---pre
---extra-index-url https://download.pytorch.org/whl/nightly/cu121
-
 accelerate
-farm-haystack[ocr,preprocessing,file-conversion,pdf]
+farm-haystack[file-conversion,pdf,ocr,preprocessing,inference,sql,faiss-gpu]
 librosa
 sacremoses
-sentencepiece
+sentence-transformers
 st-pages
 streamlit
 streamlit-authenticator
-torch
-torchaudio
-torchvision
 transformers
