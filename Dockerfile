@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM nvidia/cuda:12.2.0-devel-ubuntu20.04
+FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
 
 ENV PATH="/home/user/miniconda3/bin:${PATH}"
 ENV DEBIAN_FRONTEND=noninteractive
