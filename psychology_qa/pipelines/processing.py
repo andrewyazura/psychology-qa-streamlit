@@ -1,3 +1,4 @@
+import streamlit as st
 from haystack.nodes import (
     DocxToTextConverter,
     FileTypeClassifier,
@@ -12,6 +13,7 @@ from pipelines.embedding import get_embedding_retriever
 from pipelines.iterative_translator import CustomIterativeTranslator
 
 
+@st.cache_resource(show_spinner=False)
 def get_processing_pipeline(language: str) -> Pipeline:
     converter_kwargs = {
         "remove_numeric_tables": True,
