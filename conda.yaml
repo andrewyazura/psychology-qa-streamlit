@@ -198,4 +198,3 @@ dependencies:
       - validators==0.22.0
       - watchdog==3.0.0
       - zipp==3.16.2
-prefix: /home/andrew/anaconda3/envs/psychology_qa

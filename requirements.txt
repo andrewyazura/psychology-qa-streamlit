@@ -1,9 +1,0 @@
-accelerate
-farm-haystack[file-conversion,pdf,ocr,preprocessing,inference,sql,faiss-gpu]
-librosa
-sacremoses
-sentence-transformers
-st-pages
-streamlit
-streamlit-authenticator
-transformers
