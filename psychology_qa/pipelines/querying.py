@@ -27,18 +27,14 @@ def get_querying_pipeline() -> Pipeline:
 
     pipe.add_node(
         component=get_embedding_retriever(
-            document_store=PgvectorStore(
-                store_batch_size,
-            ),
+            document_store=PgvectorStore(store_batch_size)
         ),
         name="Retriever",
         inputs=[last_node],
     )
 
     pipe.add_node(
-        component=SentenceTransformersRanker(
-            model_name_or_path=ranker_model,
-        ),
+        component=SentenceTransformersRanker(model_name_or_path=ranker_model),
         name="Ranker",
         inputs=["Retriever"],
     )

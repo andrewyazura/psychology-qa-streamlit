@@ -60,8 +60,7 @@ files_form.empty()
 
 try:
     book = Book.create(
-        author_id=AUTHORS_NAME_TO_ID[author_name],
-        title=book_title.strip(),
+        author_id=AUTHORS_NAME_TO_ID[author_name], title=book_title.strip()
     )
 
 except PeeweeException:
@@ -102,4 +101,4 @@ with tempfile.NamedTemporaryFile(suffix=".txt") as temp:
             file_paths=[temp.name], meta={"book_id": book.id}
         )
 
-st.json([document.to_dict() for document in result["documents"]])
+    st.success(f"Book {book_title} successfully added")

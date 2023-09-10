@@ -31,10 +31,7 @@ if query := st.chat_input("Ask a psychology-related question"):
         pipe = get_querying_pipeline()
         result = pipe.run(
             query=query,
-            params={
-                "Retriever": {"top_k": 10},
-                "Ranker": {"top_k": 3},
-            },
+            params={"Retriever": {"top_k": 10}, "Ranker": {"top_k": 3}},
         )
 
     if not result["documents"]:

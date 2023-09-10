@@ -29,10 +29,7 @@ class PgvectorStore(BaseComponent):
 
             for document in documents[i : i + self.batch_size]:
                 embedding_batch.append(
-                    {
-                        "id": document.id,
-                        "embedding": document.embedding,
-                    }
+                    {"id": document.id, "embedding": document.embedding}
                 )
 
                 meta_document_batch.append(
@@ -77,9 +74,7 @@ class PgvectorStore(BaseComponent):
             .join(Author)
             .switch(MetaDocument)
             .join(EmbeddingDocument)
-            .order_by(
-                EmbeddingDocument.embedding.max_inner_product(query_emb),
-            )
+            .order_by(EmbeddingDocument.embedding.max_inner_product(query_emb))
             .limit(top_k)
         )
 

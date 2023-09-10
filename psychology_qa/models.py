@@ -23,10 +23,7 @@ class Author(BaseModel):
 
 class Book(BaseModel):
     title = CharField(max_length=255)
-    author = ForeignKeyField(
-        model=Author,
-        backref="books",
-    )
+    author = ForeignKeyField(model=Author, backref="books")
 
 
 class EmbeddingDocument(BaseModel):
@@ -42,11 +39,6 @@ class MetaDocument(BaseModel):
     meta = BinaryJSONField()
 
     embedding_document = ForeignKeyField(
-        model=EmbeddingDocument,
-        backref="meta_document",
-        unique=True,
+        model=EmbeddingDocument, backref="meta_document", unique=True
     )
-    book = ForeignKeyField(
-        model=Book,
-        backref="documents",
-    )
+    book = ForeignKeyField(model=Book, backref="documents")

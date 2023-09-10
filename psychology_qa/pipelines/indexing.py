@@ -91,9 +91,7 @@ def get_indexing_pipeline(language: str) -> Pipeline:
     )
 
     pipe.add_node(
-        component=PgvectorStore(
-            batch_size=store_batch_size,
-        ),
+        component=PgvectorStore(batch_size=store_batch_size),
         name="DocumentStore",
         inputs=["Retriever"],
     )

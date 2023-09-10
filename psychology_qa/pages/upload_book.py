@@ -30,8 +30,7 @@ with st.empty().form("files"):
     language = st.selectbox("Select book's language", LANGUAGES)
 
     file: "UploadedFile" = st.file_uploader(
-        "Upload a book",
-        type=["txt", "pdf", "md", "doc", "docx"],
+        "Upload a book", type=["txt", "pdf", "md", "doc", "docx"]
     )
 
     form_submitted = st.form_submit_button("Upload", use_container_width=True)
@@ -55,8 +54,7 @@ files_form.empty()
 
 try:
     book = Book.create(
-        author_id=AUTHORS_NAME_TO_ID[author_name],
-        title=book_title.strip(),
+        author_id=AUTHORS_NAME_TO_ID[author_name], title=book_title.strip()
     )
 
 except PeeweeException:
@@ -74,4 +72,4 @@ with tempfile.NamedTemporaryFile(suffix=file.name) as temp:
             file_paths=[temp.name], meta={"book_id": book.id}
         )
 
-st.json([document.to_dict() for document in result["documents"]])
+    st.success(f"Book {book_title} successfully added")
