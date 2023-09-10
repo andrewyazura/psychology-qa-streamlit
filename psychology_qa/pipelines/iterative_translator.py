@@ -14,6 +14,7 @@ class CustomIterativeTranslator(BaseComponent):
         self.translator = TransformersTranslator(
             model_name_or_path=f"Helsinki-NLP/opus-mt-{from_language}-{to_language}"
         )
+        self.from_language = from_language
 
     def run(self, documents: list["Document"]) -> tuple[dict, str]:
         return {"documents": self.translate(documents)}, "output_1"
@@ -23,6 +24,13 @@ class CustomIterativeTranslator(BaseComponent):
 
     def translate(self, documents: list["Document"]) -> list["Document"]:
         for document in documents:
+            document.meta.update(
+                {
+                    "_source_content": document.content,
+                    "_source_language": self.from_language,
+                }
+            )
+
             document.content = self.translator.translate(
                 documents=[document],
             )[0].content

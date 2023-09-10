@@ -7,9 +7,10 @@ from haystack.nodes import (
     TextConverter,
 )
 from haystack.pipelines import Pipeline
-
+from pipelines.embedding import get_embedding_retriever
 from pipelines.custom_preprocessor import CustomPreProcessor
 from pipelines.iterative_translator import CustomIterativeTranslator
+from pipelines.pgvector_store import PgvectorStore
 
 
 @st.cache_resource(show_spinner=False)
@@ -56,8 +57,8 @@ def get_processing_pipeline(language: str) -> Pipeline:
         component=CustomPreProcessor(
             language=language,
             split_by="sentence",
-            split_length=3,
-            split_overlap=1,
+            split_length=1,
+            split_overlap=0,
             respect_sentence=False,
         ),
         name=last_node,
@@ -79,5 +80,17 @@ def get_processing_pipeline(language: str) -> Pipeline:
             name=last_node,
             inputs=["PreProcessor"],
         )
+
+    pipe.add_node(
+        component=get_embedding_retriever(),
+        name="EmbeddingRetriever",
+        inputs=[last_node],
+    )
+
+    pipe.add_node(
+        component=PgvectorStore(),
+        name="DocumentStore",
+        inputs=["EmbeddingRetriever"],
+    )
 
     return pipe
