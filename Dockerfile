@@ -14,5 +14,11 @@ RUN apt update && \
 USER user
 WORKDIR /home/user
 
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --requirement requirements.txt
+
+CMD ["python3", "-m ", "streamlit", "run", "psychology_qa/app.py"]
+
 COPY psychology_qa psychology_qa
 COPY .streamlit .streamlit
