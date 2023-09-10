@@ -81,9 +81,9 @@ class PgvectorStore(BaseComponent):
         return [
             Document(
                 id=meta_document.id,
-                embedding=meta_document.embedding_document.embedding,
                 content=meta_document.content,
                 meta={"db_document": meta_document},
+                embedding=meta_document.embedding_document.embedding,
             )
             for meta_document in meta_documents
         ]

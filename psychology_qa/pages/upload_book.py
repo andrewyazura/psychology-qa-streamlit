@@ -13,9 +13,9 @@ from models import Author, Book
 if TYPE_CHECKING:
     from streamlit.runtime.uploaded_file_manager import UploadedFile
 
-add_page_title()
-show_pages_from_config()
 display_authentication_controls()
+show_pages_from_config()
+add_page_title()
 init_database()
 
 AUTHORS_NAME_TO_ID = {author.name: author.id for author in Author.select()}

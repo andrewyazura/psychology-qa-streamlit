@@ -5,7 +5,7 @@ icon = ":brain:"
 
 [[pages]]
 path = "psychology_qa/pages/authors.py"
-name = "Authors"
+name = "Authors & Books"
 icon = ":writing_hand:"
 
 [[pages]]
