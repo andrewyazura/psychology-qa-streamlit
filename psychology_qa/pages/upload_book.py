@@ -43,7 +43,6 @@ if author_name is None:
     st.error("Author is required")
     st.stop()
 
-print(book_title)
 if book_title is None or book_title.strip() == "":
     st.error("Book's title is required")
     st.stop()

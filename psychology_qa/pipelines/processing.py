@@ -7,9 +7,10 @@ from haystack.nodes import (
     TextConverter,
 )
 from haystack.pipelines import Pipeline
-from pipelines.embedding import get_embedding_retriever
+
+from pipelines.batch_translator import CustomBatchTranslator
 from pipelines.custom_preprocessor import CustomPreProcessor
-from pipelines.iterative_translator import CustomIterativeTranslator
+from pipelines.embedding import get_embedding_retriever
 from pipelines.pgvector_store import PgvectorStore
 
 
@@ -73,7 +74,7 @@ def get_processing_pipeline(language: str) -> Pipeline:
     if language != "en":
         last_node = "Translator"
         pipe.add_node(
-            component=CustomIterativeTranslator(
+            component=CustomBatchTranslator(
                 from_language=language,
                 to_language="en",
             ),

@@ -7,14 +7,16 @@ if TYPE_CHECKING:
     from haystack.schema import Document
 
 
-class CustomIterativeTranslator(BaseComponent):
+class CustomBatchTranslator(BaseComponent):
     outgoing_edges = 1
 
-    def __init__(self, from_language: str, to_language: str) -> None:
+    def __init__(
+        self, from_language: str, to_language: str, batch_size: int = 10
+    ) -> None:
         self.translator = TransformersTranslator(
             model_name_or_path=f"Helsinki-NLP/opus-mt-{from_language}-{to_language}"
         )
-        self.from_language = from_language
+        self.batch_size = batch_size
 
     def run(self, documents: list["Document"]) -> tuple[dict, str]:
         return {"documents": self.translate(documents)}, "output_1"
@@ -23,16 +25,18 @@ class CustomIterativeTranslator(BaseComponent):
         return self.run(documents)
 
     def translate(self, documents: list["Document"]) -> list["Document"]:
-        for document in documents:
-            document.meta.update(
-                {
-                    "_source_content": document.content,
-                    "_source_language": self.from_language,
-                }
+        translated_documents: list["Document"] = []
+
+        for i in range(0, len(documents), self.batch_size):
+            translated_documents.extend(
+                self.translator.translate(
+                    documents=documents[i : i + self.batch_size]
+                )
             )
 
-            document.content = self.translator.translate(
-                documents=[document],
-            )[0].content
+        for translated_document, document in zip(
+            translated_documents, documents
+        ):
+            translated_document.meta["_source_content"] = document.content
 
-        return documents
+        return translated_documents
