@@ -5,7 +5,6 @@ from peewee import (
     IntegerField,
     Model,
     TextField,
-    UUIDField,
 )
 from pgvector.peewee import VectorField
 from playhouse.postgres_ext import BinaryJSONField
@@ -19,11 +18,11 @@ class BaseModel(Model):
 
 
 class Author(BaseModel):
-    name = CharField()
+    name = CharField(max_length=255)
 
 
 class Book(BaseModel):
-    title = CharField()
+    title = CharField(max_length=255)
     author = ForeignKeyField(
         model=Author,
         backref="books",
@@ -31,12 +30,12 @@ class Book(BaseModel):
 
 
 class EmbeddingDocument(BaseModel):
-    id = UUIDField(primary_key=True)
+    id = CharField(primary_key=True, max_length=32)
     embedding = VectorField(dimensions=768)
 
 
 class MetaDocument(BaseModel):
-    id = UUIDField(primary_key=True)
+    id = CharField(primary_key=True, max_length=32)
     split_id = IntegerField()
 
     content = TextField()
