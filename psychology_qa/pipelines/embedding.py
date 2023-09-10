@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING
 from haystack.nodes import EmbeddingRetriever
 
 if TYPE_CHECKING:
-    from haystack.document_stores.base import BaseDocumentStore
+    from haystack.nodes.base import BaseComponent
 
 
 def get_embedding_retriever(
-    document_store: "BaseDocumentStore" = None,
+    document_store: "BaseComponent" = None,
 ) -> EmbeddingRetriever:
     return EmbeddingRetriever(
         embedding_model="sentence-transformers/multi-qa-mpnet-base-dot-v1",

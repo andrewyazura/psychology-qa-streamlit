@@ -29,7 +29,7 @@ if query := st.chat_input("Ask a psychology-related question"):
         from pipelines.querying import get_querying_pipeline
 
         pipe = get_querying_pipeline()
-        documents = pipe.run(
+        result = pipe.run(
             query=query,
             params={
                 "Retriever": {"top_k": 10},
@@ -37,10 +37,10 @@ if query := st.chat_input("Ask a psychology-related question"):
             },
         )
 
-    if not documents:
+    if not result["documents"]:
         messages.append({"role": "assistant", "content": "Nothing found..."})
 
-    for document in documents:
+    for document in result["documents"]:
         messages.append({"role": "assistant", "content": document.content})
 
     for message in messages[1:]:

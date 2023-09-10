@@ -2,8 +2,8 @@ import streamlit as st
 from haystack.nodes import SentenceTransformersRanker
 from haystack.pipelines import Pipeline
 
-from pipelines.database import get_vector_store
 from pipelines.embedding import get_embedding_retriever
+from pipelines.pgvector_store import PgvectorStore
 
 
 @st.cache_resource(show_spinner=False)
@@ -12,9 +12,9 @@ def get_querying_pipeline() -> Pipeline:
 
     pipe.add_node(
         component=get_embedding_retriever(
-            document_store=get_vector_store(),
+            document_store=PgvectorStore(),
         ),
-        name="EmbeddingRetriever",
+        name="Retriever",
         inputs=["Query"],
     )
 
@@ -22,8 +22,8 @@ def get_querying_pipeline() -> Pipeline:
         component=SentenceTransformersRanker(
             model_name_or_path="cross-encoder/ms-marco-MiniLM-L-12-v2",
         ),
-        name="SentenceTransformersRanker",
-        inputs=["EmbeddingRetriever"],
+        name="Ranker",
+        inputs=["Retriever"],
     )
 
     return pipe
