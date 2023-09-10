@@ -1,13 +1,14 @@
 from typing import TYPE_CHECKING
 
-import streamlit as st
 from transformers import pipeline
+
+from utils import cache_resource
 
 if TYPE_CHECKING:
     from transformers import Pipeline
 
 
-@st.cache_resource(show_spinner=False)
+@cache_resource()
 def get_whisper_pipeline(model_name: str) -> Pipeline:
     return pipeline(
         task="automatic-speech-recognition",

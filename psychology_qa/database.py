@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
-import streamlit as st
 from playhouse.postgres_ext import PostgresqlExtDatabase
 
 from config import postgres
 from models import Author, Book, EmbeddingDocument, MetaDocument
+from utils import cache_resource
 
 if TYPE_CHECKING:
     from peewee import DatabaseProxy
@@ -22,6 +22,6 @@ def init_database() -> "DatabaseProxy":
     return database_proxy
 
 
-@st.cache_resource(show_spinner=False)
+@cache_resource()
 def get_database() -> PostgresqlExtDatabase:
     return PostgresqlExtDatabase(**postgres)

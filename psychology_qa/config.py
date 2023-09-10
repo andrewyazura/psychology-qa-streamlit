@@ -22,3 +22,10 @@ with env.prefixed("TRANSLATOR_"):
 
 embedding_model = env.str("EMBEDDING_MODEL")
 ranker_model = env.str("RANKER_MODEL")
+
+with env.prefixed("STREAMLIT_CACHE_"):
+    streamlit_cache = {
+        "ttl": env.int("TTL"),
+        "max_entries": env.int("MAX_ENTRIES"),
+        "show_spinner": env.bool("SHOW_SPINNER"),
+    }
