@@ -11,8 +11,9 @@ class PgvectorStore(BaseComponent):
     label_index = None
     similarity = "dot_product"
 
-    def __init__(self) -> None:
+    def __init__(self, batch_size: int) -> None:
         self.database = init_database()
+        self.batch_size = batch_size
 
     def run(self, documents: list["Document"]) -> tuple[dict, str]:
         self.write_documents(documents)
@@ -21,16 +22,12 @@ class PgvectorStore(BaseComponent):
     def run_batch(self, documents: list["Document"]) -> tuple[dict, str]:
         return self.run(documents)
 
-    def write_documents(
-        self,
-        documents: list["Document"],
-        batch_size: int = 10_000,
-    ) -> None:
-        for i in range(0, len(documents), batch_size):
+    def write_documents(self, documents: list["Document"], **_) -> None:
+        for i in range(0, len(documents), self.batch_size):
             embedding_batch = []
             meta_document_batch = []
 
-            for document in documents[i : i + batch_size]:
+            for document in documents[i : i + self.batch_size]:
                 embedding_batch.append(
                     {
                         "id": document.id,

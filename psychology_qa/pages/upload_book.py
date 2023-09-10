@@ -67,9 +67,9 @@ with tempfile.NamedTemporaryFile(suffix=file.name) as temp:
     temp.write(file.read())
 
     with st.spinner("Processing text..."):
-        from pipelines.processing import get_processing_pipeline
+        from pipelines.indexing import get_indexing_pipeline
 
-        pipe = get_processing_pipeline(language)
+        pipe = get_indexing_pipeline(language)
         result: dict = pipe.run(
             file_paths=[temp.name], meta={"book_id": book.id}
         )

@@ -8,6 +8,7 @@ from haystack.nodes import (
 )
 from haystack.pipelines import Pipeline
 
+from config import store_batch_size, translator
 from pipelines.batch_translator import CustomBatchTranslator
 from pipelines.custom_preprocessor import CustomPreProcessor
 from pipelines.embedding import get_embedding_retriever
@@ -15,7 +16,7 @@ from pipelines.pgvector_store import PgvectorStore
 
 
 @st.cache_resource(show_spinner=False)
-def get_processing_pipeline(language: str) -> Pipeline:
+def get_indexing_pipeline(language: str) -> Pipeline:
     converter_kwargs = {
         "remove_numeric_tables": True,
         "valid_languages": [language],
@@ -71,12 +72,13 @@ def get_processing_pipeline(language: str) -> Pipeline:
         ],
     )
 
-    if language != "en":
+    if translator["enabled"] and language != translator["base_language"]:
         last_node = "Translator"
         pipe.add_node(
             component=CustomBatchTranslator(
                 from_language=language,
-                to_language="en",
+                to_language=translator["base_language"],
+                batch_size=translator["batch_size"],
             ),
             name=last_node,
             inputs=["PreProcessor"],
@@ -84,14 +86,16 @@ def get_processing_pipeline(language: str) -> Pipeline:
 
     pipe.add_node(
         component=get_embedding_retriever(),
-        name="EmbeddingRetriever",
+        name="Retriever",
         inputs=[last_node],
     )
 
     pipe.add_node(
-        component=PgvectorStore(),
+        component=PgvectorStore(
+            batch_size=store_batch_size,
+        ),
         name="DocumentStore",
-        inputs=["EmbeddingRetriever"],
+        inputs=["Retriever"],
     )
 
     return pipe

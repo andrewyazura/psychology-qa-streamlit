@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 import streamlit as st
 from playhouse.postgres_ext import PostgresqlExtDatabase
 
+from config import postgres
 from models import Author, Book, EmbeddingDocument, MetaDocument
 
 if TYPE_CHECKING:
@@ -23,4 +24,4 @@ def init_database() -> "DatabaseProxy":
 
 @st.cache_resource(show_spinner=False)
 def get_database() -> PostgresqlExtDatabase:
-    return PostgresqlExtDatabase(**st.secrets["postgres"])
+    return PostgresqlExtDatabase(**postgres)

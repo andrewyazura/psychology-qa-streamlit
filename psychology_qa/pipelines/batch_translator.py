@@ -11,7 +11,7 @@ class CustomBatchTranslator(BaseComponent):
     outgoing_edges = 1
 
     def __init__(
-        self, from_language: str, to_language: str, batch_size: int = 10
+        self, from_language: str, to_language: str, batch_size: int
     ) -> None:
         self.translator = TransformersTranslator(
             model_name_or_path=f"Helsinki-NLP/opus-mt-{from_language}-{to_language}"
