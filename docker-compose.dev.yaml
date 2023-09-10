@@ -16,13 +16,13 @@ services:
               capabilities: [gpu]
 
   postgres:
-    image: postgres:15.4-bookworm
+    image: ankane/pgvector:v0.5.0
     volumes:
-      - psychology_qa_postgres:/var/lib/postgresql/data
+      - psychology_qa_pgvector:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=psychology_qa
-      - POSTGRES_USER=app
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 
 volumes:
-  psychology_qa_postgres:
+  psychology_qa_pgvector:
