@@ -7,9 +7,8 @@ from haystack.nodes import (
     TextConverter,
 )
 from haystack.pipelines import Pipeline
-from pipelines.custom_faiss_store import CustomFAISSDocumentStore
+
 from pipelines.custom_preprocessor import CustomPreProcessor
-from pipelines.embedding import get_embedding_retriever
 from pipelines.iterative_translator import CustomIterativeTranslator
 
 
@@ -80,13 +79,5 @@ def get_processing_pipeline(language: str) -> Pipeline:
             name=last_node,
             inputs=["PreProcessor"],
         )
-
-    pipe.add_node(
-        component=CustomFAISSDocumentStore(
-            retriever=get_embedding_retriever()
-        ),
-        name="FAISSDocumentStore",
-        inputs=[last_node],
-    )
 
     return pipe

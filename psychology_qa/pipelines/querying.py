@@ -1,6 +1,7 @@
 import streamlit as st
 from haystack.nodes import SentenceTransformersRanker
 from haystack.pipelines import Pipeline
+
 from pipelines.database import get_vector_store
 from pipelines.embedding import get_embedding_retriever
 

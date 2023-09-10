@@ -3,3 +3,4 @@ line-length = 79
 
 [tool.ruff]
 line-length = 79
+src = ["./psychology_qa/"]

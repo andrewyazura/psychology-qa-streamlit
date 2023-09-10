@@ -3,9 +3,10 @@ from typing import TYPE_CHECKING
 
 import librosa as lr
 import streamlit as st
+from st_pages import add_page_title, show_pages_from_config
+
 from authenticator import display_authentication_controls
 from constants import LANGUAGES, SAMPLE_RATE, WHISPER_MODELS
-from st_pages import add_page_title, show_pages_from_config
 
 if TYPE_CHECKING:
     from streamlit.runtime.uploaded_file_manager import UploadedFile

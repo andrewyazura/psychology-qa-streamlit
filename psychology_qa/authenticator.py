@@ -1,6 +1,6 @@
-import yaml
 import streamlit as st
 import streamlit_authenticator as stauth
+import yaml
 
 
 def get_auth() -> stauth.Authenticate:
