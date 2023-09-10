@@ -18,11 +18,11 @@ class BaseModel(Model):
 
 
 class Author(BaseModel):
-    name = CharField(max_length=255)
+    name = CharField(max_length=255, unique=True)
 
 
 class Book(BaseModel):
-    title = CharField(max_length=255)
+    title = CharField(max_length=255, unique=True)
     author = ForeignKeyField(model=Author, backref="books")
 
 
