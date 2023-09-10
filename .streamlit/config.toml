@@ -9,7 +9,3 @@ fileWatcherType = "none"
 [browser]
 serverPort = 8501
 gatherUsageStats = false
-
-[theme]
-primaryColor = "#0000ff"
-font = "sans serif"
