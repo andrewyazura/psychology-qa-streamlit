@@ -1,46 +1,51 @@
 import streamlit as st
-from st_pages import add_page_title, show_pages_from_config
 
-from authenticator import display_authentication_controls
-
-display_authentication_controls()
-show_pages_from_config()
-add_page_title()
+from pages.base import BasePage
 
 
-def display_message(message: dict[str, str]) -> None:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+class AppPage(BasePage):
+    def _display(self) -> None:
+        if "messages" not in st.session_state:
+            st.session_state["messages"] = []
 
+        for message in st.session_state["messages"]:
+            self.display_message(message)
 
-if "messages" not in st.session_state:
-    st.session_state["messages"] = []
+        query = st.chat_input("Ask a psychology-related question")
 
-for message in st.session_state["messages"]:
-    display_message(message)
+        if not query:
+            st.stop()
 
-if query := st.chat_input("Ask a psychology-related question"):
-    user_message = {"role": "user", "content": query}
+        messages = [{"role": "user", "content": query}]
+        self.display_message(messages[0])
 
-    messages = [user_message]
-    display_message(user_message)
-
-    with st.spinner("Searching for answers..."):
-        from pipelines.querying import get_querying_pipeline
-
-        pipe = get_querying_pipeline()
-        result = pipe.run(
-            query=query,
-            params={"Retriever": {"top_k": 10}, "Ranker": {"top_k": 3}},
+        result = self.query_data(
+            run_kwargs={
+                "query": query,
+                "params": {"Retriever": {"top_k": 10}, "Ranker": {"top_k": 3}},
+            }
         )
 
-    if not result["documents"]:
-        messages.append({"role": "assistant", "content": "Nothing found..."})
+        if not result["documents"]:
+            messages.append(
+                {"role": "assistant", "content": "Nothing found..."}
+            )
 
-    for document in result["documents"]:
-        messages.append({"role": "assistant", "content": document.content})
+        for document in result["documents"]:
+            messages.append({"role": "assistant", "content": document.content})
 
-    for message in messages[1:]:
-        display_message(message)
+        for message in messages[1:]:
+            self.display_message(message)
 
-    st.session_state["messages"].extend(messages)
+        st.session_state["messages"].extend(messages)
+
+    def display_messages(self, messages: list[dict[str, str]]) -> None:
+        for message in messages:
+            self.display_message(message)
+
+    def display_message(self, message: dict[str, str]) -> None:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+
+AppPage().display()

@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from peewee import DatabaseProxy
 
 
+@cache_resource()
 def init_database() -> "DatabaseProxy":
     from models import database_proxy
 
@@ -22,6 +23,5 @@ def init_database() -> "DatabaseProxy":
     return database_proxy
 
 
-@cache_resource()
 def get_database() -> PostgresqlExtDatabase:
     return PostgresqlExtDatabase(**postgres)

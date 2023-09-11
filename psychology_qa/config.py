@@ -17,7 +17,7 @@ with env.prefixed("TRANSLATOR_"):
     translator = {
         "enabled": env.bool("ENABLED"),
         "base_language": env.str("BASE_LANGUAGE"),
-        "batch_size": env.str("BATCH_SIZE"),
+        "batch_size": env.int("BATCH_SIZE"),
     }
 
 embedding_model = env.str("EMBEDDING_MODEL")

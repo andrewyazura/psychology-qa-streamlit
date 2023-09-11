@@ -1,104 +1,84 @@
+import os
 import tempfile
-from typing import TYPE_CHECKING
 
-import librosa as lr
 import streamlit as st
-from peewee import PeeweeException
-from st_pages import add_page_title, show_pages_from_config
 
-from authenticator import display_authentication_controls
-from constants import LANGUAGES, SAMPLE_RATE, WHISPER_MODELS
-from database import init_database
-from models import Author, Book
+from models import Author
+from pages.base import BasePage
 
-if TYPE_CHECKING:
-    from streamlit.runtime.uploaded_file_manager import UploadedFile
 
-display_authentication_controls()
-show_pages_from_config()
-add_page_title()
-init_database()
+class UploadAudioPage(BasePage):
+    def _display(self) -> None:
+        files_form = st.empty()
+        author_options = Author.selectbox_options()
 
-AUTHORS_NAME_TO_ID = {
-    author.name: author.id for author in Author.select(Author.name)
-}
+        with files_form.form("audio_files"):
+            author_name = st.selectbox(
+                "Select audiobook's author", author_options
+            )
+            book_title = st.text_input(
+                "Enter audiobook's title", max_chars=255
+            )
 
-files_form = st.empty()
-with files_form.form("files"):
-    author_name = st.selectbox(
-        "Select book's author", AUTHORS_NAME_TO_ID.keys()
-    )
-    book_title = st.text_input("Enter book's title", max_chars=255)
+            language = st.selectbox(
+                "Select language of the audiobook", ("en", "ru")
+            )
+            model_name = st.selectbox(
+                "Select a whisper model",
+                (
+                    "openai/whisper-tiny",
+                    "openai/whisper-base",
+                    "openai/whisper-small",
+                    "openai/whisper-medium",
+                    "openai/whisper-large",
+                    "openai/whisper-large-v2",
+                ),
+            )
 
-    language = st.selectbox("Select language of the audiobook", LANGUAGES)
-    model_name = st.selectbox("Select a whisper model", WHISPER_MODELS)
+            audio_files = st.file_uploader(
+                "Upload audiobook files (multiple files allowed)",
+                accept_multiple_files=True,
+                type=["wav", "mp3", "m4a"],
+            )
 
-    files: list["UploadedFile"] = st.file_uploader(
-        "Upload an audiobook (multiple files allowed)",
-        accept_multiple_files=True,
-        type=["wav", "mp3", "m4a"],
-    )
+            if not st.form_submit_button("Upload", use_container_width=True):
+                st.stop()
 
-    form_submitted = st.form_submit_button("Upload", use_container_width=True)
+        if not author_name:
+            st.error("Author is required")
+            st.stop()
 
-if not form_submitted:
-    st.stop()
+        if not book_title:
+            st.error("Book is requied")
+            st.stop()
 
-if author_name is None:
-    st.error("Author is required")
-    st.stop()
+        if not audio_files:
+            st.error("Upload at least one file")
+            st.stop()
 
-if book_title is None or book_title.strip == "":
-    st.error("Book's title is required")
-    st.stop()
-
-if not files:
-    st.error("File is required")
-    st.stop()
-
-files_form.empty()
-
-try:
-    book = Book.create(
-        author_id=AUTHORS_NAME_TO_ID[author_name], title=book_title.strip()
-    )
-
-except PeeweeException:
-    st.error("Failed to add a book")
-    st.stop()
-
-with st.spinner("Loading Whisper model..."):
-    from pipelines.whisper import get_whisper_pipeline
-
-    whisper = get_whisper_pipeline(model_name)
-
-bar = st.empty()
-bar.progress(0.0, text="Transcribing files")
-
-with tempfile.NamedTemporaryFile(suffix=".txt") as temp:
-    for i, file in enumerate(reversed(files)):
-        bar.progress(i / len(files), text=f"Transcribing {i}/{len(files)}")
-        audio, _ = lr.load(file, sr=SAMPLE_RATE)
-
-        result = whisper(
-            audio,
-            generate_kwargs={
-                "task": "transcribe",
-                "language": f"<|{language}|>",
-            },
+        files_form.empty()
+        book = self.create_book(
+            title=book_title, author_id=author_options[author_name]
         )
 
-        temp.write(result["text"].strip().encode())
+        with tempfile.TemporaryDirectory() as tempdirname:
+            temporary_file_paths = []
+            for audio in audio_files:
+                path = os.path.join(tempdirname, audio.name)
+                temporary_file_paths.append(path)
 
-    bar.progress(1.0, text="Transcriptions done!")
-    bar.empty()
+                with open(path, "wb") as file:
+                    file.write(audio.read())
 
-    with st.spinner("Processing text..."):
-        from pipelines.indexing import get_indexing_pipeline
+            self.process_data(
+                {"language": language, "whisper_model_name": model_name},
+                {
+                    "file_paths": temporary_file_paths,
+                    "meta": {"book_id": book.id, "from_audio": True},
+                },
+            )
 
-        pipe = get_indexing_pipeline(language)
-        documents: dict = pipe.run(
-            file_paths=[temp.name], meta={"book_id": book.id}
-        )
+        st.success("Book added")
 
-    st.success(f"Book {book_title} successfully added")
+
+UploadAudioPage().display()
