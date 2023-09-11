@@ -1,6 +1,8 @@
 from environs import Env
 
 env = Env()
+env.read_env(".app.env")
+env.read_env(".postgres.env")
 
 with env.prefixed("POSTGRES_"):
     postgres = {
