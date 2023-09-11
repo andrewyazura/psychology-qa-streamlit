@@ -13,6 +13,14 @@ with env.prefixed("POSTGRES_"):
 
     store_batch_size = env.int("STORE_BATCH_SIZE")
 
+with env.prefixed("PREPROCESSOR_"):
+    preprocessor = {
+        "split_by": env.str("SPLIT_BY"),
+        "split_length": env.int("SPLIT_LENGTH"),
+        "split_overlap": env.int("SPLIT_OVERLAP"),
+        "respect_sentence": env.bool("RESPECT_SENTENCE"),
+    }
+
 with env.prefixed("TRANSLATOR_"):
     translator = {
         "enabled": env.bool("ENABLED"),

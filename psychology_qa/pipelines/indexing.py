@@ -8,7 +8,7 @@ from haystack.nodes import (
 )
 from haystack.pipelines import Pipeline
 
-from config import embedding_model, store_batch_size, translator
+from config import embedding_model, store_batch_size, translator, preprocessor
 from pipelines.nodes import (
     CustomBatchTranslator,
     CustomPreProcessor,
@@ -67,13 +67,7 @@ def get_indexing_pipeline(
 
     last_node = "PreProcessor"
     pipe.add_node(
-        component=CustomPreProcessor(
-            language=language,
-            split_by="sentence",
-            split_length=1,
-            split_overlap=0,
-            respect_sentence=False,
-        ),
+        component=CustomPreProcessor(language=language, **preprocessor),
         name=last_node,
         inputs=[converter_class.__name__ for converter_class in converters],
     )
