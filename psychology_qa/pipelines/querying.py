@@ -1,10 +1,8 @@
-from haystack.nodes import SentenceTransformersRanker
+from haystack.nodes import EmbeddingRetriever, SentenceTransformersRanker
 from haystack.pipelines import Pipeline
 
-from config import ranker_model, store_batch_size, translator
-from pipelines.batch_translator import CustomBatchTranslator
-from pipelines.embedding import get_embedding_retriever
-from pipelines.pgvector_store import PgvectorStore
+from config import embedding_model, ranker_model, store_batch_size, translator
+from pipelines.nodes import CustomBatchTranslator, PgvectorStore
 from utils import cache_resource
 
 
@@ -26,8 +24,10 @@ def get_querying_pipeline() -> Pipeline:
         )
 
     pipe.add_node(
-        component=get_embedding_retriever(
-            document_store=PgvectorStore(store_batch_size)
+        component=EmbeddingRetriever(
+            embedding_model=embedding_model,
+            model_format="sentence_transformers",
+            document_store=PgvectorStore(store_batch_size),
         ),
         name="Retriever",
         inputs=[last_node],

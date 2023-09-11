@@ -1,5 +1,6 @@
 from haystack.nodes import (
     DocxToTextConverter,
+    EmbeddingRetriever,
     FileTypeClassifier,
     MarkdownConverter,
     PDFToTextConverter,
@@ -7,52 +8,62 @@ from haystack.nodes import (
 )
 from haystack.pipelines import Pipeline
 
-from config import store_batch_size, translator
-from pipelines.batch_translator import CustomBatchTranslator
-from pipelines.custom_preprocessor import CustomPreProcessor
-from pipelines.embedding import get_embedding_retriever
-from pipelines.pgvector_store import PgvectorStore
+from config import embedding_model, store_batch_size, translator
+from pipelines.nodes import (
+    CustomBatchTranslator,
+    CustomPreProcessor,
+    PgvectorStore,
+    WhisperTranscriber,
+)
 from utils import cache_resource
 
 
 @cache_resource()
-def get_indexing_pipeline(language: str) -> Pipeline:
-    converter_kwargs = {
-        "remove_numeric_tables": True,
-        "valid_languages": [language],
-    }
-
+def get_indexing_pipeline(
+    language: str, whisper_model_name: str | None = None
+) -> Pipeline:
     pipe = Pipeline()
 
     pipe.add_node(
-        component=FileTypeClassifier(),
+        component=FileTypeClassifier(
+            supported_types=["txt", "pdf", "md", "docx", "wav", "mp3", "m4a"]
+        ),
         name="FileTypeClassifier",
         inputs=["File"],
     )
 
-    pipe.add_node(
-        component=TextConverter(**converter_kwargs),
-        name="TextConverter",
-        inputs=["FileTypeClassifier.output_1"],
-    )
+    converters = [
+        TextConverter,
+        PDFToTextConverter,
+        MarkdownConverter,
+        DocxToTextConverter,
+    ]
+    converter_kwargs = {
+        "remove_numeric_tables": True,
+        "valid_languages": [translator["base_language"], language],
+    }
 
-    pipe.add_node(
-        component=PDFToTextConverter(**converter_kwargs),
-        name="PDFToTextConverter",
-        inputs=["FileTypeClassifier.output_2"],
-    )
+    for i, converter_class in enumerate(converters, start=1):
+        pipe.add_node(
+            component=converter_class(**converter_kwargs),
+            name=converter_class.__name__,
+            inputs=[f"FileTypeClassifier.output_{i}"],
+        )
 
-    pipe.add_node(
-        component=MarkdownConverter(**converter_kwargs),
-        name="MarkdownConverter",
-        inputs=["FileTypeClassifier.output_3"],
-    )
+    if whisper_model_name:
+        converters.append(WhisperTranscriber)
 
-    pipe.add_node(
-        component=DocxToTextConverter(**converter_kwargs),
-        name="DocxToTextConverter",
-        inputs=["FileTypeClassifier.output_4"],
-    )
+        pipe.add_node(
+            component=WhisperTranscriber(
+                model_name=whisper_model_name, language=language
+            ),
+            name="WhisperTranscriber",
+            inputs=[
+                "FileTypeClassifier.output_5",
+                "FileTypeClassifier.output_6",
+                "FileTypeClassifier.output_7",
+            ],
+        )
 
     last_node = "PreProcessor"
     pipe.add_node(
@@ -64,12 +75,7 @@ def get_indexing_pipeline(language: str) -> Pipeline:
             respect_sentence=False,
         ),
         name=last_node,
-        inputs=[
-            "TextConverter",
-            "PDFToTextConverter",
-            "MarkdownConverter",
-            "DocxToTextConverter",
-        ],
+        inputs=[converter_class.__name__ for converter_class in converters],
     )
 
     if translator["enabled"] and language != translator["base_language"]:
@@ -85,7 +91,11 @@ def get_indexing_pipeline(language: str) -> Pipeline:
         )
 
     pipe.add_node(
-        component=get_embedding_retriever(),
+        component=EmbeddingRetriever(
+            embedding_model=embedding_model,
+            model_format="sentence_transformers",
+            document_store=PgvectorStore(store_batch_size),
+        ),
         name="Retriever",
         inputs=[last_node],
     )
