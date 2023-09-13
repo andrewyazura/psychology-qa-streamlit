@@ -1,27 +1,28 @@
+from abc import ABC, abstractmethod
+
 import streamlit as st
-from st_pages import add_page_title, show_pages_from_config
 
 from authenticator import get_auth
 from database import init_database
 
 
-class BasePage:
-    def __init__(self) -> None:
-        pass
+class BasePage(ABC):
+    page_title: str
+    page_icon: str
 
+    @abstractmethod
     def _display(self) -> None:
-        raise NotImplementedError
+        ...
 
     def display(self) -> None:
-        show_pages_from_config()
-        self.display_authentication()
-        add_page_title()
+        self._display_page_title()
+        self._display_authentication()
 
         init_database()
 
         self._display()
 
-    def display_authentication(self) -> None:
+    def _display_authentication(self) -> None:
         authenticator = get_auth()
         name, auth_status, _ = authenticator.login("Login", "main")
 
@@ -35,3 +36,9 @@ class BasePage:
 
         elif auth_status is None:
             st.stop()
+
+    def _display_page_title(self):
+        st.set_page_config(
+            page_title=self.page_title, page_icon=self.page_icon
+        )
+        st.header(f"{self.page_icon} {self.page_title}", divider="rainbow")

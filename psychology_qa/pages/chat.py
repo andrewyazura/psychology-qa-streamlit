@@ -6,6 +6,9 @@ from pages.base import BasePage
 
 
 class ChatPage(BasePage):
+    page_title = "Psychology Q&A"
+    page_icon = ":brain:"
+
     def _display(self) -> None:
         if "messages" not in st.session_state:
             st.session_state.messages = []

@@ -6,6 +6,9 @@ from pages.base import BasePage
 
 
 class LibraryPage(BasePage):
+    page_title = "Library"
+    page_icon = ":card_file_box:"
+
     def _display(self) -> None:
         self.add_author_form()
         self.list()

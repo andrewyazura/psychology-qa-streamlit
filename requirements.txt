@@ -10,7 +10,6 @@ pgvector==0.2.2
 psycopg2-binary==2.9.7
 sacremoses==0.0.53
 sentence-transformers==2.2.2
-st-pages==0.4.4
 streamlit-authenticator==0.2.3
 streamlit==1.26.0
 torch==2.2.0.dev20230909+cu121

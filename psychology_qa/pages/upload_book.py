@@ -10,6 +10,9 @@ from pages.base import BasePage
 
 
 class UploadBookPage(BasePage):
+    page_title = "Upload a book"
+    page_icon = ":book:"
+
     def _display(self) -> None:
         self.author_options = Author.select_box_options()
 
