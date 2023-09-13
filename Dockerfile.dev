@@ -19,8 +19,9 @@ USER user
 WORKDIR /home/user
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir --requirement requirements.txt
+RUN --mount=type=cache,target=/home/user/.cache/pip \
+    pip install --upgrade pip && \
+    pip install --requirement requirements.txt
 
 CMD ["python3", "-m", "streamlit", "run", "psychology_qa/app.py"]
 
