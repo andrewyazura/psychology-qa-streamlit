@@ -6,7 +6,7 @@ services:
     ports:
       - 8501:8501
     volumes:
-      - ~/.cache/huggingface/hub:/home/user/.cache/huggingface/hub:rw
+      - psychology_qa_models:/home/user/.cache:rw
     env_file:
       - .app.env
       - .postgres.env
@@ -23,9 +23,10 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - psychology_qa_pgvector:/var/lib/postgresql/data
+      - psychology_qa_pgvector:/var/lib/postgresql/data:rw
     env_file:
       - .postgres.env
 
 volumes:
   psychology_qa_pgvector:
+  psychology_qa_models:

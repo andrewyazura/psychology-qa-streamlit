@@ -13,7 +13,7 @@ FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
 
 RUN apt update && \
     apt install --no-install-recommends -y \
-    build-essential software-properties-common wget && \
+    build-essential software-properties-common libfontconfig && \
     add-apt-repository -y ppa:deadsnakes/ppa && \
     apt install --no-install-recommends -y \
     python3.10 python3-pip python3-setuptools python3-distutils && \
