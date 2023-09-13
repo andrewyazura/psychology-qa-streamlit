@@ -13,9 +13,8 @@ class BasePage:
         raise NotImplementedError
 
     def display(self) -> None:
-        self.display_authentication()
-
         show_pages_from_config()
+        self.display_authentication()
         add_page_title()
 
         init_database()
