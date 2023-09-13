@@ -2,7 +2,7 @@ from typing import Any
 
 import streamlit as st
 
-from pages.base import BasePage
+from views.base import BasePage
 
 
 class ChatPage(BasePage):

@@ -18,6 +18,14 @@ class BasePage(ABC):
         self._display_page_title()
         self._display_authentication()
 
+        selected_page = st.sidebar.radio(
+            "Select a Page", ("Chat", "Library", "Upload a book")
+        )
+
+        if selected_page != st.session_state.selected_page:
+            st.session_state.selected_page = selected_page
+            st.experimental_rerun()
+
         init_database()
 
         self._display()

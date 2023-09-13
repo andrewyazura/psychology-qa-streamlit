@@ -6,7 +6,7 @@ import streamlit as st
 from peewee import IntegrityError
 
 from models import Author, Book
-from pages.base import BasePage
+from views.base import BasePage
 
 
 class UploadBookPage(BasePage):
@@ -131,6 +131,3 @@ class UploadBookPage(BasePage):
             )
         except IntegrityError:
             st.error("Book with this title already exists")
-
-
-UploadBookPage().display()

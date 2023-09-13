@@ -2,7 +2,7 @@ import streamlit as st
 from peewee import IntegrityError, prefetch
 
 from models import Author, Book
-from pages.base import BasePage
+from views.base import BasePage
 
 
 class LibraryPage(BasePage):
@@ -69,6 +69,3 @@ class LibraryPage(BasePage):
 
     def delete_book(self, book: Book) -> None:
         book.deep_delete()
-
-
-LibraryPage().display()
