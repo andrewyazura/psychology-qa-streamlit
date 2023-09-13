@@ -21,7 +21,7 @@ class Author(BaseModel):
     name = CharField(max_length=255, unique=True)
 
     @classmethod
-    def selectbox_options(cls) -> dict[str, int]:
+    def select_box_options(cls) -> dict[str, int]:
         return {author.name: author.id for author in cls.select()}
 
 

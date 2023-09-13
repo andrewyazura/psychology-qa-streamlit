@@ -4,16 +4,11 @@ name = "Psychology Q&A"
 icon = ":brain:"
 
 [[pages]]
-path = "psychology_qa/pages/authors.py"
-name = "Authors & Books"
-icon = ":writing_hand:"
+path = "psychology_qa/pages/library.py"
+name = "Library"
+icon = ":card_file_box:"
 
 [[pages]]
 path = "psychology_qa/pages/upload_book.py"
 name = "Upload a book"
 icon = ":book:"
-
-[[pages]]
-path = "psychology_qa/pages/upload_audio.py"
-name = "Upload an audiobook"
-icon = ":headphones:"
