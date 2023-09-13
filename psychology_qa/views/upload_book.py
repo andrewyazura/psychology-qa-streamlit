@@ -129,5 +129,6 @@ class UploadBookPage(BasePage):
                 author_id=self.author_options[self.author_name],
                 title=self.book_title,
             )
+
         except IntegrityError:
             st.error("Book with this title already exists")
