@@ -29,6 +29,10 @@ class Book(BaseModel):
     title = CharField(max_length=255, unique=True)
     author = ForeignKeyField(model=Author, backref="books")
 
+    def deep_delete(self) -> None:
+        MetaDocument.delete().where(MetaDocument.book == self).execute()
+        self.delete_instance()
+
 
 class EmbeddingDocument(BaseModel):
     id = CharField(primary_key=True, max_length=32)
@@ -43,6 +47,9 @@ class MetaDocument(BaseModel):
     meta = BinaryJSONField()
 
     embedding_document = ForeignKeyField(
-        model=EmbeddingDocument, backref="meta_document", unique=True
+        model=EmbeddingDocument,
+        backref="meta_document",
+        unique=True,
+        on_delete="CASCADE",
     )
     book = ForeignKeyField(model=Book, backref="documents")

@@ -45,17 +45,11 @@ class LibraryPage(BasePage):
             )
 
             if not author.books:
-                st.caption(
-                    "No books added yet. "
-                    "Upload a book or an audiobook to see it here"
-                )
+                st.caption("No books added yet.")
                 continue
 
-            tabs = st.tabs([book.title for book in author.books])
-
-            for tab, book in zip(tabs, author.books):
-                with tab:
-                    st.write(book.title)
+            for book in author.books:
+                with st.expander(book.title):
                     st.button(
                         "Delete book",
                         key=f"delete-book-{book.id}",
@@ -71,7 +65,7 @@ class LibraryPage(BasePage):
         author.delete_instance()
 
     def delete_book(self, book: Book) -> None:
-        book.delete_instance()
+        book.deep_delete()
 
 
 LibraryPage().display()
