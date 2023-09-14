@@ -32,8 +32,8 @@ with env.prefixed("TRANSLATOR_"):
 
 with env.prefixed("EMBEDDING_"):
     embedding = {
-        "model": env.str("MODEL"),
-        "format": env.str("FORMAT"),
+        "embedding_model": env.str("MODEL"),
+        "model_format": env.str("FORMAT"),
         "top_k": env.int("TOP_K"),
     }
 

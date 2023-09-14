@@ -25,10 +25,7 @@ def get_querying_pipeline() -> Pipeline:
 
     pipe.add_node(
         component=EmbeddingRetriever(
-            embedding_model=embedding["model"],
-            model_format=embedding["format"],
-            top_k=embedding["top_k"],
-            document_store=PgvectorStore(store_batch_size),
+            document_store=PgvectorStore(store_batch_size), **embedding
         ),
         name="Retriever",
         inputs=[last_node],
