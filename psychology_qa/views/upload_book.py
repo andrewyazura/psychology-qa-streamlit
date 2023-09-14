@@ -54,15 +54,20 @@ class UploadBookPage(BasePage):
             ) as temporary_file:
                 temporary_file.write(file.read())
 
-                self._process_data(
-                    {"language": self.language},
-                    {
-                        "file_paths": [temporary_file.name],
-                        "meta": {"book_id": book.id, "from_audio": True},
-                    },
-                )
+                try:
+                    self._process_data(
+                        {"language": self.language},
+                        {
+                            "file_paths": [temporary_file.name],
+                            "meta": {"book_id": book.id, "from_audio": True},
+                        },
+                    )
 
-        st.toast("Data uploaded", icon="📁")
+                except:
+                    book.deep_delete()
+                    raise
+
+        st.success("Data uploaded", icon="📁")
 
     def _upload_audiobook(self) -> None:
         model_name = st.selectbox(
@@ -106,16 +111,23 @@ class UploadBookPage(BasePage):
                     with open(path, "wb") as file:
                         file.write(audio.read())
 
-                self._process_data(
-                    {
-                        "language": self.language,
-                        "whisper_model_name": model_name,
-                    },
-                    {
-                        "file_paths": temporary_file_paths,
-                        "meta": {"book_id": book.id, "from_audio": True},
-                    },
-                )
+                try:
+                    self._process_data(
+                        {
+                            "language": self.language,
+                            "whisper_model_name": model_name,
+                        },
+                        {
+                            "file_paths": temporary_file_paths,
+                            "meta": {"book_id": book.id, "from_audio": True},
+                        },
+                    )
+
+                except:
+                    book.deep_delete()
+                    raise
+
+        st.success("Data uploaded", icon="📁")
 
     def _process_data(
         self, init_kwargs: dict | None = None, run_kwargs: dict | None = None
