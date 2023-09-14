@@ -15,10 +15,8 @@ from pipelines.nodes import (
     PgvectorStore,
     WhisperTranscriber,
 )
-from utils import cache_resource
 
 
-@cache_resource()
 def get_indexing_pipeline(
     language: str, whisper_model_name: str | None = None
 ) -> Pipeline:
