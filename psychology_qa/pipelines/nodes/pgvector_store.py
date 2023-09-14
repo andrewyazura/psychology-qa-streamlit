@@ -32,31 +32,30 @@ class PgvectorStore(BaseComponent):
                     {"id": document.id, "embedding": document.embedding}
                 )
 
+                if "_source_content" in document.meta:
+                    content = document.meta.pop("_source_content")
+                else:
+                    content = document.content
+
                 meta_document_batch.append(
                     {
                         "id": document.id,
                         "embedding_document_id": document.id,
                         "book_id": document.meta.pop("book_id"),
                         "split_id": document.meta.pop("_split_id"),
-                        "content": document.meta.pop("_source_content"),
+                        "content": content,
                         "meta": document.meta,
                     }
                 )
 
             with self.database.atomic():
-                EmbeddingDocument.insert_many(embedding_batch).on_conflict(
-                    conflict_target=(EmbeddingDocument.id,),
-                    preserve=(EmbeddingDocument.embedding),
-                ).execute()
+                EmbeddingDocument.insert_many(
+                    embedding_batch
+                ).on_conflict_ignore().execute()
 
-                MetaDocument.insert_many(meta_document_batch).on_conflict(
-                    conflict_target=(MetaDocument.id,),
-                    preserve=(
-                        MetaDocument.split_id,
-                        MetaDocument.content,
-                        MetaDocument.meta,
-                    ),
-                ).execute()
+                MetaDocument.insert_many(
+                    meta_document_batch
+                ).on_conflict_ignore().execute()
 
     def query_by_embedding(
         self, query_emb: list, top_k: int = 10, **_
