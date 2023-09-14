@@ -7,7 +7,7 @@ from views.base import BasePage
 
 class ChatPage(BasePage):
     page_title = "Psychology Q&A"
-    page_icon = ":brain:"
+    page_icon = "🧠"
 
     def _display(self) -> None:
         if "messages" not in st.session_state:
@@ -24,12 +24,16 @@ class ChatPage(BasePage):
         messages = [{"role": "user", "content": query}]
         self._display_message(messages[0])
 
-        result = self._query_data(
-            run_kwargs={
-                "query": query,
-                "params": {"Retriever": {"top_k": 10}, "Ranker": {"top_k": 3}},
-            }
-        )
+        with st.spinner("Searching for answers..."):
+            result = self._query_data(
+                run_kwargs={
+                    "query": query,
+                    "params": {
+                        "Retriever": {"top_k": 10},
+                        "Ranker": {"top_k": 3},
+                    },
+                }
+            )
 
         if not result["documents"]:
             messages.append(
@@ -55,8 +59,7 @@ class ChatPage(BasePage):
     def _query_data(
         self, init_kwargs: dict | None = None, run_kwargs: dict | None = None
     ) -> dict[str, Any]:
-        with st.spinner("Searching for answers..."):
-            from pipelines.querying import get_querying_pipeline
+        from pipelines.querying import get_querying_pipeline
 
-            pipeline = get_querying_pipeline(**(init_kwargs or {}))
-            return pipeline.run(**(run_kwargs or {}))
+        pipeline = get_querying_pipeline(**(init_kwargs or {}))
+        return pipeline.run(**(run_kwargs or {}))

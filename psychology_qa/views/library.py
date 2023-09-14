@@ -7,7 +7,7 @@ from views.base import BasePage
 
 class LibraryPage(BasePage):
     page_title = "Library"
-    page_icon = ":card_file_box:"
+    page_icon = "🗃️"
 
     def _display(self) -> None:
         self.add_author_form()
@@ -21,7 +21,7 @@ class LibraryPage(BasePage):
             if st.form_submit_button("Add", use_container_width=True):
                 try:
                     _ = Author.create(name=name)
-                    st.success("Author added")
+                    st.toast("Author added", icon="✍")
 
                 except IntegrityError:
                     st.error(f"Author alredy exists: {name}")
@@ -66,6 +66,8 @@ class LibraryPage(BasePage):
             return
 
         author.delete_instance()
+        st.toast(f"Author '{author.name}' deleted", icon="🗑️")
 
     def delete_book(self, book: Book) -> None:
         book.deep_delete()
+        st.toast(f"Book '{book.title}' deleted", icon="🗑️")

@@ -11,7 +11,7 @@ from views.base import BasePage
 
 class UploadBookPage(BasePage):
     page_title = "Upload a book"
-    page_icon = ":book:"
+    page_icon = "📖"
 
     def _display(self) -> None:
         self.author_options = Author.select_box_options()
@@ -46,18 +46,23 @@ class UploadBookPage(BasePage):
             st.error("File is required")
             return
 
-        with tempfile.NamedTemporaryFile(suffix=file.name) as temporary_file:
-            temporary_file.write(file.read())
+        st.divider()
 
-            self._process_data(
-                {"language": self.language},
-                {
-                    "file_paths": [temporary_file.name],
-                    "meta": {"book_id": book.id, "from_audio": True},
-                },
-            )
+        with st.spinner("Processing data..."):
+            with tempfile.NamedTemporaryFile(
+                suffix=file.name
+            ) as temporary_file:
+                temporary_file.write(file.read())
 
-        st.success("Data uploaded")
+                self._process_data(
+                    {"language": self.language},
+                    {
+                        "file_paths": [temporary_file.name],
+                        "meta": {"book_id": book.id, "from_audio": True},
+                    },
+                )
+
+        st.toast("Data uploaded", icon="📁")
 
     def _upload_audiobook(self) -> None:
         model_name = st.selectbox(
@@ -89,31 +94,36 @@ class UploadBookPage(BasePage):
             st.error("At least one file is required")
             return
 
-        with tempfile.TemporaryDirectory() as tempdirname:
-            temporary_file_paths = []
-            for audio in audio_files:
-                path = os.path.join(tempdirname, audio.name)
-                temporary_file_paths.append(path)
+        st.divider()
 
-                with open(path, "wb") as file:
-                    file.write(audio.read())
+        with st.spinner("Processing data..."):
+            with tempfile.TemporaryDirectory() as tempdirname:
+                temporary_file_paths = []
+                for audio in audio_files:
+                    path = os.path.join(tempdirname, audio.name)
+                    temporary_file_paths.append(path)
 
-            self._process_data(
-                {"language": self.language, "whisper_model_name": model_name},
-                {
-                    "file_paths": temporary_file_paths,
-                    "meta": {"book_id": book.id, "from_audio": True},
-                },
-            )
+                    with open(path, "wb") as file:
+                        file.write(audio.read())
+
+                self._process_data(
+                    {
+                        "language": self.language,
+                        "whisper_model_name": model_name,
+                    },
+                    {
+                        "file_paths": temporary_file_paths,
+                        "meta": {"book_id": book.id, "from_audio": True},
+                    },
+                )
 
     def _process_data(
         self, init_kwargs: dict | None = None, run_kwargs: dict | None = None
     ) -> dict[str, Any]:
-        with st.spinner("Processing data..."):
-            from pipelines.indexing import get_indexing_pipeline
+        from pipelines.indexing import get_indexing_pipeline
 
-            pipeline = get_indexing_pipeline(**(init_kwargs or {}))
-            return pipeline.run(**(run_kwargs or {}))
+        pipeline = get_indexing_pipeline(**(init_kwargs or {}))
+        return pipeline.run(**(run_kwargs or {}))
 
     def _create_book(self) -> Book:
         if not self.author_name:
