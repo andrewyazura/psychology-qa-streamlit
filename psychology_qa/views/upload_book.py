@@ -85,7 +85,7 @@ class UploadBookPage(BasePage):
         audio_files = st.file_uploader(
             "Upload audiobook files (multiple files allowed)",
             accept_multiple_files=True,
-            type=["wav", "mp3", "m4a"],
+            type=["mp3", "m4a", "wav"],
         )
 
         if not st.button("Upload audiobook", use_container_width=True):

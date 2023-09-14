@@ -24,7 +24,7 @@ def get_indexing_pipeline(
 
     pipe.add_node(
         component=FileTypeClassifier(
-            supported_types=["txt", "pdf", "md", "docx", "wav", "mp3", "m4a"]
+            supported_types=["txt", "pdf", "md", "docx", "mp3", "m4a", "wav"]
         ),
         name="FileTypeClassifier",
         inputs=["File"],
