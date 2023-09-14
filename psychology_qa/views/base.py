@@ -19,7 +19,7 @@ class BasePage(ABC):
         self._display_authentication()
         self._page_selector()
 
-        init_database()
+        self.database = init_database()
 
         self._display()
 

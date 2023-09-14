@@ -1,7 +1,7 @@
 import streamlit as st
-from peewee import IntegrityError, prefetch
+from peewee import IntegrityError, fn, prefetch
 
-from models import Author, Book
+from models import Author, Book, MetaDocument
 from views.base import BasePage
 
 
@@ -30,7 +30,12 @@ class LibraryPage(BasePage):
         with st.spinner("Loading authors..."):
             authors = prefetch(
                 Author.select().order_by(Author.id.desc()),
-                Book.select().order_by(Book.id.desc()),
+                Book.select(
+                    Book, fn.COUNT(MetaDocument.id).alias("documents_count")
+                )
+                .join(MetaDocument)
+                .group_by(Book.id)
+                .order_by(Book.id.desc()),
             )
 
         if not authors:
@@ -59,15 +64,20 @@ class LibraryPage(BasePage):
                         on_click=self.delete_book,
                         args=(book,),
                     )
+                    st.write(f"Documents in DB: {book.documents_count}")
 
     def delete_author(self, author: Author) -> None:
         if author.books:
             st.error("You have to delete author's books first")
             return
 
-        author.delete_instance()
+        with self.database.transaction():
+            author.delete_instance()
+
         st.toast(f"Author '{author.name}' deleted", icon="🗑️")
 
     def delete_book(self, book: Book) -> None:
-        book.deep_delete()
+        with self.database.transaction():
+            book.deep_delete()
+
         st.toast(f"Book '{book.title}' deleted", icon="🗑️")
