@@ -1,5 +1,12 @@
 # syntax=docker/dockerfile:1
 
+FROM python:3.10-slim-bookworm AS requirements
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.txt .
+RUN python -m venv --copies --upgrade-deps /opt/venv && \
+    pip install --no-cache-dir --requirement requirements.txt
+
 FROM ubuntu:22.04 AS xpdf
 
 RUN apt update && \
@@ -9,27 +16,21 @@ RUN apt update && \
     cp xpdf-tools-linux-4.04/bin64/pdftotext . && \
     rm -rf xpdf-tools-linux-*
 
-FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
+FROM nvidia/cuda:11.7.1-runtime-ubuntu22.04
 
 RUN apt update && \
     apt install --no-install-recommends -y \
     build-essential software-properties-common libfontconfig && \
     add-apt-repository -y ppa:deadsnakes/ppa && \
     apt install --no-install-recommends -y \
-    python3.10 python3-pip python3-setuptools python3-distutils && \
-    apt clean && rm -rf /var/lib/apt/lists/* && \
-    useradd -m -u 1000 user
+    python3.10 python3-dev && \
+    apt clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=xpdf pdftotext /usr/local/bin
+COPY --from=requirements /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-USER user
-WORKDIR /home/user
+CMD ["python", "-m", "streamlit", "run", "psychology_qa/app.py"]
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir --requirement requirements.txt
-
-CMD ["python3", "-m", "streamlit", "run", "psychology_qa/app.py"]
-
-COPY --chown=user .streamlit .streamlit
-COPY --chown=user psychology_qa psychology_qa
+COPY .streamlit .streamlit
+COPY psychology_qa psychology_qa

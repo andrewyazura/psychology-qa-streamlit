@@ -1,6 +1,3 @@
---pre
---extra-index-url https://download.pytorch.org/whl/nightly/cu121
-
 accelerate==0.22.0
 environs==9.5.0
 farm-haystack[inference,preprocessing,file-conversion]==1.20.0
@@ -12,5 +9,5 @@ sacremoses==0.0.53
 sentence-transformers==2.2.2
 streamlit-authenticator==0.2.3
 streamlit==1.26.0
-torch==2.2.0.dev20230909+cu121
+torch==2.0.1
 transformers==4.32.1
