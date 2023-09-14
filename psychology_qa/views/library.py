@@ -1,5 +1,5 @@
 import streamlit as st
-from peewee import IntegrityError, fn, prefetch
+from peewee import JOIN, IntegrityError, fn, prefetch
 
 from models import Author, Book, MetaDocument
 from views.base import BasePage
@@ -33,7 +33,7 @@ class LibraryPage(BasePage):
                 Book.select(
                     Book, fn.COUNT(MetaDocument.id).alias("documents_count")
                 )
-                .join(MetaDocument)
+                .join(MetaDocument, JOIN.LEFT_OUTER)
                 .group_by(Book.id)
                 .order_by(Book.id.desc()),
             )
