@@ -8,7 +8,7 @@ from haystack.nodes import (
 )
 from haystack.pipelines import Pipeline
 
-from config import embedding_model, store_batch_size, translator, preprocessor
+from config import embedding, store_batch_size, translator, preprocessor
 from pipelines.nodes import (
     CustomBatchTranslator,
     CustomPreProcessor,
@@ -84,8 +84,9 @@ def get_indexing_pipeline(
 
     pipe.add_node(
         component=EmbeddingRetriever(
-            embedding_model=embedding_model,
-            model_format="sentence_transformers",
+            embedding_model=embedding["model"],
+            model_format=embedding["format"],
+            top_k=embedding["top_k"],
             document_store=PgvectorStore(store_batch_size),
         ),
         name="Retriever",

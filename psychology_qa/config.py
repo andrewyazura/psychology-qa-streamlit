@@ -30,8 +30,19 @@ with env.prefixed("TRANSLATOR_"):
         "batch_size": env.int("BATCH_SIZE"),
     }
 
-embedding_model = env.str("EMBEDDING_MODEL")
-ranker_model = env.str("RANKER_MODEL")
+with env.prefixed("EMBEDDING_"):
+    embedding = {
+        "model": env.str("MODEL"),
+        "format": env.str("FORMAT"),
+        "top_k": env.int("TOP_K"),
+    }
+
+with env.prefixed("RANKER_"):
+    ranker = {
+        "enabled": env.bool("ENABLED"),
+        "model": env.str("MODEL"),
+        "top_k": env.int("TOP_K"),
+    }
 
 with env.prefixed("STREAMLIT_CACHE_"):
     streamlit_cache = {

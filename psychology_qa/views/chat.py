@@ -25,15 +25,7 @@ class ChatPage(BasePage):
         self._display_message(messages[0])
 
         with st.spinner("Searching for answers..."):
-            result = self._query_data(
-                run_kwargs={
-                    "query": query,
-                    "params": {
-                        "Retriever": {"top_k": 10},
-                        "Ranker": {"top_k": 3},
-                    },
-                }
-            )
+            result = self._query_data(run_kwargs={"query": query})
 
         if not result["documents"]:
             messages.append(
