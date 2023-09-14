@@ -8,7 +8,7 @@ from haystack.nodes import (
 )
 from haystack.pipelines import Pipeline
 
-from config import embedding, store_batch_size, translator, preprocessor
+from config import embedding, preprocessor, store_batch_size, translator
 from pipelines.nodes import (
     CustomBatchTranslator,
     CustomPreProcessor,
@@ -24,7 +24,7 @@ def get_indexing_pipeline(
 
     pipe.add_node(
         component=FileTypeClassifier(
-            supported_types=["txt", "pdf", "md", "docx", "mp3", "m4a", "wav"]
+            supported_types=["txt", "pdf", "md", "docx", "mp3"]
         ),
         name="FileTypeClassifier",
         inputs=["File"],
@@ -56,11 +56,7 @@ def get_indexing_pipeline(
                 model_name=whisper_model_name, language=language
             ),
             name="WhisperTranscriber",
-            inputs=[
-                "FileTypeClassifier.output_5",
-                "FileTypeClassifier.output_6",
-                "FileTypeClassifier.output_7",
-            ],
+            inputs=["FileTypeClassifier.output_5"],
         )
 
     last_node = "PreProcessor"
