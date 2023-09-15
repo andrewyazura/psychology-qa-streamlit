@@ -28,7 +28,9 @@ RUN apt update && \
 
 COPY --from=xpdf pdftotext /usr/local/bin
 COPY --from=requirements /opt/venv /opt/venv
+
 ENV PATH="/opt/venv/bin:$PATH"
+RUN python -c "import nltk; nltk.download('punkt')"
 
 CMD ["python", "-m", "streamlit", "run", "psychology_qa/app.py"]
 
