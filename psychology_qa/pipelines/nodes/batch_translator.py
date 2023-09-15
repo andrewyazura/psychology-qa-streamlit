@@ -15,15 +15,10 @@ class CustomBatchTranslator(BaseComponent):
         self, from_language: str, to_language: str, batch_size: int
     ) -> None:
         self.batch_size = batch_size
+        self.from_language = from_language
         self.to_language = to_language
 
-        if from_language == "detect":
-            self.translator = None
-            return
-
-        self.init_translator(from_language)
-
-    def init_translator(self, from_language: str) -> None:
+    def init_model(self, from_language: str) -> None:
         self.translator = TransformersTranslator(
             model_name_or_path="Helsinki-NLP/opus-mt-"
             f"{from_language}-{self.to_language}"
@@ -34,20 +29,25 @@ class CustomBatchTranslator(BaseComponent):
         query: str | None = None,
         documents: list["Document"] | None = None,
     ) -> tuple[dict, str]:
-        if not self.translator:
+        if self.from_language == "detect":
             detected_language = detect(query or documents[0].content)
 
             if detected_language == self.to_language:
                 return {"documents": documents}, "output_1"
 
-            self.init_translator(detected_language)
+            self.from_language = detected_language
+
+        self.init_model(self.from_language)
+        output = {}
 
         if query:
-            return {
-                "query": self.translator.translate(query=query)
-            }, "output_1"
+            output = {"query": self.translator.translate(query=query)}
 
-        return {"documents": self.translate(documents)}, "output_1"
+        elif documents:
+            output = {"documents": self.translate(documents)}
+
+        del self.translator
+        return output, "output_1"
 
     def run_batch(
         self,

@@ -35,6 +35,7 @@ class WhisperTranscriber(BaseComponent):
                 Document(content=result["text"].strip(), meta=meta)
             )
 
+        del self.pipe
         return {"documents": documents}, "output_1"
 
     def run_batch(
