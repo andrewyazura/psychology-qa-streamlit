@@ -1,6 +1,7 @@
 from peewee import (
     CharField,
     DatabaseProxy,
+    FixedCharField,
     ForeignKeyField,
     IntegerField,
     Model,
@@ -28,6 +29,7 @@ class Author(BaseModel):
 class Book(BaseModel):
     title = CharField(max_length=255, unique=True)
     author = ForeignKeyField(model=Author, backref="books")
+    language = FixedCharField(max_length=2)
 
     def deep_delete(self) -> None:
         MetaDocument.delete().where(MetaDocument.book == self).execute()

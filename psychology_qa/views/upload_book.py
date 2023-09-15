@@ -69,7 +69,7 @@ class UploadBookView(BaseView):
 
     def _process_data_with_status(
         self, uploaded_files: list, whisper_model_name: str | None = None
-    ):
+    ) -> None:
         book = self._create_book()
 
         if not book:
@@ -144,6 +144,7 @@ class UploadBookView(BaseView):
             return Book.create(
                 author_id=self.author_options[self.author_name],
                 title=self.book_title,
+                language=self.language,
             )
 
         except IntegrityError:
