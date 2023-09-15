@@ -4,7 +4,7 @@ FROM python:3.10-slim-bookworm AS requirements
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY requirements.txt .
-RUN --mount=type=cache,target=/home/user/.cache \
+RUN --mount=type=cache,target=/root/.cache \
     python -m venv --copies --upgrade-deps /opt/venv && \
     pip install --requirement requirements.txt
 
