@@ -58,13 +58,21 @@ class LibraryView(BaseView):
 
             for book in author.books:
                 with st.expander(book.title):
-                    st.button(
-                        "Delete book",
-                        key=f"delete-book-{book.id}",
-                        on_click=self.delete_book,
-                        args=(book,),
-                    )
-                    st.write(f"Documents in DB: {book.documents_count}")
+                    col1, col2, col3 = st.columns(3)
+
+                    with col1:
+                        st.metric("Documents in DB", book.documents_count)
+
+                    with col2:
+                        st.metric("Language", book.language.upper())
+
+                    with col3:
+                        st.button(
+                            "Delete book",
+                            key=f"delete-book-{book.id}",
+                            on_click=self.delete_book,
+                            args=(book,),
+                        )
 
     def delete_author(self, author: Author) -> None:
         if author.books:
