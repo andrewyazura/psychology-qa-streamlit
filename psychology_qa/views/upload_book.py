@@ -1,8 +1,9 @@
 import os
 import tempfile
-from typing import Any
+import time
 
 import streamlit as st
+from humanfriendly import format_timespan
 from peewee import IntegrityError
 
 from models import Author, Book
@@ -31,43 +32,16 @@ class UploadBookView(BaseView):
             self._upload_audiobook()
 
     def _upload_book(self) -> None:
-        file = st.file_uploader(
-            "Upload a book", type=["txt", "pdf", "md", "doc", "docx"]
+        files = st.file_uploader(
+            "Upload files (multiple allowed)",
+            accept_multiple_files=True,
+            type=["txt", "pdf", "md", "doc", "docx"],
         )
 
         if not st.button("Upload book", use_container_width=True):
             return
 
-        book = self._create_book()
-        if not book:
-            return
-
-        if not file:
-            st.error("File is required")
-            return
-
-        st.divider()
-
-        with st.spinner("Processing data..."):
-            with tempfile.NamedTemporaryFile(
-                suffix=file.name
-            ) as temporary_file:
-                temporary_file.write(file.read())
-
-                try:
-                    self._process_data(
-                        {"language": self.language},
-                        {
-                            "file_paths": [temporary_file.name],
-                            "meta": {"book_id": book.id, "from_audio": True},
-                        },
-                    )
-
-                except:
-                    book.deep_delete()
-                    raise
-
-        st.success("Data uploaded", icon="📁")
+        self._process_data_with_status(files)
 
     def _upload_audiobook(self) -> None:
         model_name = st.selectbox(
@@ -83,7 +57,7 @@ class UploadBookView(BaseView):
         )
 
         audio_files = st.file_uploader(
-            "Upload audiobook files (multiple files allowed)",
+            "Upload audio files (multiple allowed)",
             accept_multiple_files=True,
             type=["mp3"],
         )
@@ -91,51 +65,71 @@ class UploadBookView(BaseView):
         if not st.button("Upload audiobook", use_container_width=True):
             return
 
+        self._process_data_with_status(audio_files, model_name)
+
+    def _process_data_with_status(
+        self, uploaded_files: list, whisper_model_name: str | None = None
+    ):
         book = self._create_book()
+
         if not book:
             return
 
-        if not audio_files:
+        if not uploaded_files:
             st.error("At least one file is required")
             return
 
         st.divider()
+        start_time = time.time()
 
-        with st.spinner("Processing data..."):
+        with st.status(
+            "Processing data...", state="running", expanded=True
+        ) as status:
             with tempfile.TemporaryDirectory() as tempdirname:
                 temporary_file_paths = []
-                for audio in audio_files:
-                    path = os.path.join(tempdirname, audio.name)
+
+                for uploaded_file in uploaded_files:
+                    path = os.path.join(tempdirname, uploaded_file.name)
                     temporary_file_paths.append(path)
 
                     with open(path, "wb") as file:
-                        file.write(audio.read())
+                        file.write(uploaded_file.read())
 
                 try:
-                    self._process_data(
-                        {
-                            "language": self.language,
-                            "whisper_model_name": model_name,
-                        },
-                        {
-                            "file_paths": temporary_file_paths,
-                            "meta": {"book_id": book.id, "from_audio": True},
-                        },
+                    st.caption("Loading pipeline...")
+                    from pipelines.indexing import get_indexing_pipeline
+
+                    pipeline = get_indexing_pipeline(
+                        language=self.language,
+                        whisper_model_name=whisper_model_name,
+                    )
+
+                    diff = self._readable_timespan(start_time)
+                    st.caption(f"Finished loading in {diff}")
+
+                    st.caption("Running pipeline...")
+                    pipeline.run(
+                        file_paths=temporary_file_paths,
+                        meta={"book_id": book.id, "from_audio": True},
                     )
 
                 except:
+                    diff = self._readable_timespan(start_time)
+                    status.update(
+                        label=f"Unexpected error. Finished in {diff}",
+                        state="error",
+                        expanded=False,
+                    )
+
                     book.deep_delete()
                     raise
 
-        st.success("Data uploaded", icon="📁")
-
-    def _process_data(
-        self, init_kwargs: dict | None = None, run_kwargs: dict | None = None
-    ) -> dict[str, Any]:
-        from pipelines.indexing import get_indexing_pipeline
-
-        pipeline = get_indexing_pipeline(**(init_kwargs or {}))
-        return pipeline.run(**(run_kwargs or {}))
+            diff = self._readable_timespan(start_time)
+            status.update(
+                label=f"Data processed. Finished in {diff}",
+                state="complete",
+                expanded=False,
+            )
 
     def _create_book(self) -> Book:
         if not self.author_name:
@@ -154,3 +148,7 @@ class UploadBookView(BaseView):
 
         except IntegrityError:
             st.error("Book with this title already exists")
+
+    @staticmethod
+    def _readable_timespan(start_time: float) -> str:
+        return format_timespan(time.time() - start_time)
