@@ -6,12 +6,12 @@ import streamlit as st
 from peewee import IntegrityError
 
 from models import Author, Book
-from views.base import BasePage
+from views.base import BaseView
 
 
-class UploadBookPage(BasePage):
-    page_title = "Upload a book"
-    page_icon = "📖"
+class UploadBookView(BaseView):
+    view_title = "Upload a book"
+    view_icon = "📖"
 
     def _display(self) -> None:
         self.author_options = Author.select_box_options()

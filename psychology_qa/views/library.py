@@ -2,12 +2,12 @@ import streamlit as st
 from peewee import JOIN, IntegrityError, fn, prefetch
 
 from models import Author, Book, MetaDocument
-from views.base import BasePage
+from views.base import BaseView
 
 
-class LibraryPage(BasePage):
-    page_title = "Library"
-    page_icon = "🗃️"
+class LibraryView(BaseView):
+    view_title = "Library"
+    view_icon = "🗃️"
 
     def _display(self) -> None:
         self.add_author_form()

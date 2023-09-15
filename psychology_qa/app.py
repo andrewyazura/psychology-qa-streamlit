@@ -1,16 +1,16 @@
 import streamlit as st
 
-from views import ChatPage, LibraryPage, UploadBookPage
+from views import ChatView, LibraryView, UploadBookView
 
-if "selected_page" not in st.session_state:
-    st.session_state.selected_page = "Chat"
+if "selected_view" not in st.session_state:
+    st.session_state.selected_view = "Chat"
 
-match st.session_state.selected_page:
+match st.session_state.selected_view:
     case "Chat":
-        ChatPage().display()
+        ChatView().display()
 
     case "Library":
-        LibraryPage().display()
+        LibraryView().display()
 
     case "Upload a book":
-        UploadBookPage().display()
+        UploadBookView().display()

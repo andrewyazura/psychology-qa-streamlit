@@ -2,12 +2,12 @@ from typing import Any
 
 import streamlit as st
 
-from views.base import BasePage
+from views.base import BaseView
 
 
-class ChatPage(BasePage):
-    page_title = "Psychology Q&A"
-    page_icon = "🧠"
+class ChatView(BaseView):
+    view_title = "Psychology Q&A"
+    view_icon = "🧠"
 
     def _display(self) -> None:
         if "messages" not in st.session_state:

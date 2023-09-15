@@ -1,3 +1,3 @@
-from views.chat import ChatPage
-from views.library import LibraryPage
-from views.upload_book import UploadBookPage
+from views.chat import ChatView
+from views.library import LibraryView
+from views.upload_book import UploadBookView

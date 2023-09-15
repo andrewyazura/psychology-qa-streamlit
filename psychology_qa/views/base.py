@@ -6,28 +6,28 @@ from authenticator import get_auth
 from database import init_database
 
 
-class BasePage(ABC):
-    page_title: str
-    page_icon: str
+class BaseView(ABC):
+    view_title: str
+    view_icon: str
 
     @abstractmethod
     def _display(self) -> None:
         ...
 
     def display(self) -> None:
-        self._display_page_title()
+        self._display_view_title()
         self._display_authentication()
-        self._page_selector()
+        self._view_selector()
 
         self.database = init_database()
 
         self._display()
 
-    def _display_page_title(self) -> None:
+    def _display_view_title(self) -> None:
         st.set_page_config(
-            page_title=self.page_title, page_icon=self.page_icon
+            page_title=self.view_title, page_icon=self.view_icon
         )
-        st.header(f"{self.page_icon} {self.page_title}", divider="rainbow")
+        st.header(f"{self.view_icon} {self.view_title}", divider="rainbow")
 
     def _display_authentication(self) -> None:
         authenticator = get_auth()
@@ -44,11 +44,11 @@ class BasePage(ABC):
         elif auth_status is None:
             st.stop()
 
-    def _page_selector(self) -> None:
-        selected_page = st.sidebar.radio(
-            "Select a Page", ("Chat", "Library", "Upload a book")
+    def _view_selector(self) -> None:
+        selected_view = st.sidebar.radio(
+            "Select a page", ("Chat", "Library", "Upload a book")
         )
 
-        if selected_page != st.session_state.selected_page:
-            st.session_state.selected_page = selected_page
+        if selected_view != st.session_state.get("selected_view", "Chat"):
+            st.session_state.selected_view = selected_view
             st.experimental_rerun()
