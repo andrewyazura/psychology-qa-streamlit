@@ -49,6 +49,9 @@ class BaseView(ABC):
             "Select a page", ("Chat", "Library", "Upload a book")
         )
 
-        if selected_view != st.session_state.get("selected_view", "Chat"):
+        if "selected_view" not in st.session_state:
+            st.session_state.selected_view = "Chat"
+
+        if selected_view != st.session_state.selected_view:
             st.session_state.selected_view = selected_view
             st.experimental_rerun()
