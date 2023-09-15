@@ -4,6 +4,13 @@ env = Env()
 env.read_env(".app.env")
 env.read_env(".postgres.env")
 
+with env.prefixed("LOGGING_"):
+    logging = {
+        "level": env.log_level("LEVEL"),
+        "format": env.str("FORMAT"),
+        "date_format": env.str("DATE_FORMAT"),
+    }
+
 with env.prefixed("POSTGRES_"):
     postgres = {
         "database": env.str("DB"),
