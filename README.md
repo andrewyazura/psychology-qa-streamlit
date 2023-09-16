@@ -5,6 +5,11 @@ colorFrom: blue
 colorTo: pink
 sdk: docker
 app_port: 8501
+models:
+    - intfloat/multilingual-e5-large
+tags:
+    - "Sentence similarity"
+    - "Semantic search"
 ---
 
 # Psychology Q&A
@@ -17,7 +22,7 @@ you can easily use it for your personal needs.
 You can upload `txt`, `pdf`, `md`, and `doc` files, but also
 `mp3` audio, which will be transcribed by Whisper.
 
-## Embedding models:
+## Embedding models
 
 This is a list of embedding models I've tried, along with my
 feedback. I'd recommend using `intfloat/multilingual-e5-large`,
@@ -44,7 +49,7 @@ CREATE EXTENSION vector;
 
 ## Screenshots
 
-<img src="./assets/chat_page.png" alt="Chat page with example answers" width=400> <img src="./assets/library_page.png" alt="List of authors and book profiles" width=400> <img src="./assets/upload_page.png" alt="Upload page for books" width=400> <img src="./assets/upload_audio_page.png" alt="Upload page for audio" width=400>
+<img src="./assets/pages/chat.png" alt="Chat page with example answers" width=400> <img src="./assets/pages/library.png" alt="List of authors and book profiles" width=400> <img src="./assets/pages/upload.png" alt="Upload page for books" width=400> <img src="./assets/pages/upload_audio.png" alt="Upload page for audio" width=400>
 
 ## To Do
 
