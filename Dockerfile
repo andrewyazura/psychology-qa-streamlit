@@ -4,13 +4,14 @@ FROM python:3.10-slim-bookworm AS requirements
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY requirements.txt .
-RUN python -m venv --copies --upgrade-deps /opt/venv && \
-    pip install --no-cache-dir --requirement requirements.txt
+RUN --mount=type=cache,target=/root/.cache \
+    python -m venv --copies --upgrade-deps /opt/venv && \
+    pip install --requirement requirements.txt
 
 FROM ubuntu:22.04 AS xpdf
 
-RUN apt update && \
-    apt install wget -y && \
+RUN apt-get update && \
+    apt-get install wget -y && \
     wget https://dl.xpdfreader.com/xpdf-tools-linux-4.04.tar.gz && \
     tar -xvf xpdf-tools-linux-4.04.tar.gz && \
     cp xpdf-tools-linux-4.04/bin64/pdftotext . && \
@@ -18,13 +19,14 @@ RUN apt update && \
 
 FROM nvidia/cuda:11.7.1-runtime-ubuntu22.04
 
-RUN apt update && \
-    apt install --no-install-recommends -y \
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update && \
+    apt-get install --no-install-recommends -y \
     build-essential software-properties-common libfontconfig && \
     add-apt-repository -y ppa:deadsnakes/ppa && \
-    apt install --no-install-recommends -y \
+    apt-get install --no-install-recommends -y \
     python3.10 python3-dev && \
-    apt clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=xpdf pdftotext /usr/local/bin
 COPY --from=requirements /opt/venv /opt/venv
