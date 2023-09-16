@@ -38,7 +38,7 @@ class Book(BaseModel):
 
 class EmbeddingDocument(BaseModel):
     id = CharField(primary_key=True, max_length=32)
-    embedding = VectorField(dimensions=768)
+    embedding = VectorField(dimensions=1024)
 
 
 class MetaDocument(BaseModel):

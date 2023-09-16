@@ -1,8 +1,11 @@
 from environs import Env
 
 env = Env()
+
 env.read_env(".app.env")
 env.read_env(".postgres.env")
+
+# system
 
 with env.prefixed("LOGGING_"):
     logging = {
@@ -10,6 +13,15 @@ with env.prefixed("LOGGING_"):
         "format": env.str("FORMAT"),
         "date_format": env.str("DATE_FORMAT"),
     }
+
+with env.prefixed("STREAMLIT_CACHE_"):
+    streamlit_cache = {
+        "ttl": env.int("TTL"),
+        "max_entries": env.int("MAX_ENTRIES"),
+        "show_spinner": env.bool("SHOW_SPINNER"),
+    }
+
+# database
 
 with env.prefixed("POSTGRES_"):
     postgres = {
@@ -20,7 +32,9 @@ with env.prefixed("POSTGRES_"):
         "port": env.int("PORT"),
     }
 
-    store_batch_size = env.int("STORE_BATCH_SIZE")
+    store_batch_size = env.int("STORE_BATCH_SIZE", 10_000)
+
+# pipeline
 
 with env.prefixed("PREPROCESSOR_"):
     preprocessor = {
@@ -30,13 +44,6 @@ with env.prefixed("PREPROCESSOR_"):
         "respect_sentence": env.bool("RESPECT_SENTENCE"),
     }
 
-with env.prefixed("TRANSLATOR_"):
-    translator = {
-        "enabled": env.bool("ENABLED"),
-        "base_language": env.str("BASE_LANGUAGE"),
-        "batch_size": env.int("BATCH_SIZE"),
-    }
-
 with env.prefixed("EMBEDDING_"):
     embedding = {
         "embedding_model": env.str("MODEL"),
@@ -44,18 +51,22 @@ with env.prefixed("EMBEDDING_"):
         "top_k": env.int("TOP_K"),
     }
 
+# optional
+
+with env.prefixed("TRANSLATOR_"):
+    translator = {
+        "enabled": env.bool("ENABLED", False),
+        "base_language": env.str("BASE_LANGUAGE", "en"),
+        "batch_size": env.int("BATCH_SIZE", 1),
+    }
+
+
 with env.prefixed("RANKER_"):
     ranker = {
-        "enabled": env.bool("ENABLED"),
-        "model": env.str("MODEL"),
-        "top_k": env.int("TOP_K"),
+        "enabled": env.bool("ENABLED", False),
+        "model": env.str("MODEL", "cross-encoder/ms-marco-MiniLM-L-12-v2"),
+        "top_k": env.int("TOP_K", 3),
     }
 
-with env.prefixed("STREAMLIT_CACHE_"):
-    streamlit_cache = {
-        "ttl": env.int("TTL"),
-        "max_entries": env.int("MAX_ENTRIES"),
-        "show_spinner": env.bool("SHOW_SPINNER"),
-    }
 
-whisper_batch_size = env.int("WHISPER_BATCH_SIZE")
+whisper_batch_size = env.int("WHISPER_BATCH_SIZE", 1)
