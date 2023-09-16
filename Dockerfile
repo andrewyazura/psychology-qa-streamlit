@@ -11,8 +11,9 @@ RUN --mount=type=cache,target=/root/.cache \
 FROM ubuntu:22.04 AS xpdf
 
 RUN apt-get update && \
-    apt-get install wget -y && \
-    wget https://dl.xpdfreader.com/xpdf-tools-linux-4.04.tar.gz && \
+    apt-get install --no-install-recommends -y wget && \
+    wget --no-check-certificate \
+    https://dl.xpdfreader.com/xpdf-tools-linux-4.04.tar.gz && \
     tar -xvf xpdf-tools-linux-4.04.tar.gz && \
     cp xpdf-tools-linux-4.04/bin64/pdftotext . && \
     rm -rf xpdf-tools-linux-*
@@ -31,10 +32,14 @@ RUN --mount=type=cache,target=/var/cache/apt \
 COPY --from=xpdf pdftotext /usr/local/bin
 COPY --from=requirements /opt/venv /opt/venv
 
+RUN useradd -m -u 1000 user
+USER user
+WORKDIR /home/user
+
 ENV PATH="/opt/venv/bin:$PATH"
 RUN python -c "import nltk; nltk.download('punkt')"
 
-CMD ["python", "-m", "streamlit", "run", "psychology_qa/app.py"]
+CMD ["streamlit", "run", "psychology_qa/app.py"]
 
-COPY .streamlit .streamlit
-COPY psychology_qa psychology_qa
+COPY --chown=user .streamlit .streamlit
+COPY --chown=user psychology_qa psychology_qa
