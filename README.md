@@ -44,10 +44,7 @@ CREATE EXTENSION vector;
 
 ## Screenshots
 
-<img src="./assets/chat_page.png" alt="Chat page with example answers" width=300>
-<img src="./assets/library_page.png" alt="List of authors and book profiles" width=300>
-<img src="./assets/upload_page.png" alt="Upload page for books" width=300>
-<img src="./assets/upload_audio_page.png" alt="Upload page for audio" width=300>
+<img src="./assets/chat_page.png" alt="Chat page with example answers" width=400> <img src="./assets/library_page.png" alt="List of authors and book profiles" width=400> <img src="./assets/upload_page.png" alt="Upload page for books" width=400> <img src="./assets/upload_audio_page.png" alt="Upload page for audio" width=400>
 
 ## To Do
 
