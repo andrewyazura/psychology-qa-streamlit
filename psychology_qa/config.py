@@ -57,3 +57,5 @@ with env.prefixed("STREAMLIT_CACHE_"):
         "max_entries": env.int("MAX_ENTRIES"),
         "show_spinner": env.bool("SHOW_SPINNER"),
     }
+
+whisper_batch_size = env.int("WHISPER_BATCH_SIZE")

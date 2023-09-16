@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import librosa
@@ -5,14 +6,19 @@ from haystack.nodes.base import BaseComponent
 from haystack.schema import Document
 from transformers import pipeline
 
+logger = logging.getLogger(__name__)
+
 
 class WhisperTranscriber(BaseComponent):
     outgoing_edges = 1
 
-    def __init__(self, model_name: str, language: str) -> None:
+    def __init__(
+        self, model_name: str, language: str, batch_size: int | None = None
+    ) -> None:
         self.pipe = pipeline(
             task="automatic-speech-recognition",
             model=model_name,
+            batch_size=batch_size,
             chunk_length_s=30,
             device_map="auto",
         )

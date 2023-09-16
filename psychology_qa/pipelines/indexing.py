@@ -8,7 +8,13 @@ from haystack.nodes import (
 )
 from haystack.pipelines import Pipeline
 
-from config import embedding, preprocessor, store_batch_size, translator
+from config import (
+    embedding,
+    preprocessor,
+    store_batch_size,
+    translator,
+    whisper_batch_size,
+)
 from pipelines.nodes import (
     CustomBatchTranslator,
     CustomPreProcessor,
@@ -53,7 +59,9 @@ def get_indexing_pipeline(
 
         pipe.add_node(
             component=WhisperTranscriber(
-                model_name=whisper_model_name, language=language
+                model_name=whisper_model_name,
+                language=language,
+                batch_size=whisper_batch_size,
             ),
             name="WhisperTranscriber",
             inputs=["FileTypeClassifier.output_5"],
@@ -80,7 +88,8 @@ def get_indexing_pipeline(
 
     pipe.add_node(
         component=EmbeddingRetriever(
-            document_store=PgvectorStore(store_batch_size), **embedding
+            document_store=PgvectorStore(batch_size=store_batch_size),
+            **embedding,
         ),
         name="Retriever",
         inputs=[last_node],
