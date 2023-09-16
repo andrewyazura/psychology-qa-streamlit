@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 import time
@@ -8,6 +9,8 @@ from peewee import IntegrityError
 
 from models import Author, Book
 from views.base import BaseView
+
+logger = logging.getLogger(__name__)
 
 
 class UploadBookView(BaseView):
@@ -96,7 +99,9 @@ class UploadBookView(BaseView):
                         file.write(uploaded_file.read())
 
                 try:
+                    logger.info("Loading pipeline...")
                     st.caption("Loading pipeline...")
+
                     from pipelines.indexing import get_indexing_pipeline
 
                     pipeline = get_indexing_pipeline(
@@ -104,17 +109,21 @@ class UploadBookView(BaseView):
                         whisper_model_name=whisper_model_name,
                     )
 
-                    diff = self._readable_timespan(start_time)
-                    st.caption(f"Finished loading in {diff}")
+                    diff = self._get_formatted_timespan(start_time)
 
+                    logger.info(f"Finished loading in {diff}")
+                    logger.info("Running pipeline...")
+
+                    st.caption(f"Finished loading in {diff}")
                     st.caption("Running pipeline...")
+
                     pipeline.run(
                         file_paths=temporary_file_paths,
                         meta={"book_id": book.id, "from_audio": True},
                     )
 
                 except:
-                    diff = self._readable_timespan(start_time)
+                    diff = self._get_formatted_timespan(start_time)
                     status.update(
                         label=f"Unexpected error. Finished in {diff}",
                         state="error",
@@ -124,7 +133,9 @@ class UploadBookView(BaseView):
                     book.deep_delete()
                     raise
 
-            diff = self._readable_timespan(start_time)
+            diff = self._get_formatted_timespan(start_time)
+            logger.info(f"Data processed. Finished in {diff}")
+
             status.update(
                 label=f"Data processed. Finished in {diff}",
                 state="complete",
@@ -151,5 +162,5 @@ class UploadBookView(BaseView):
             st.error("Book with this title already exists")
 
     @staticmethod
-    def _readable_timespan(start_time: float) -> str:
+    def _get_formatted_timespan(start_time: float) -> str:
         return format_timespan(time.time() - start_time)
