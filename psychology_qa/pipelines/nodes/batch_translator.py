@@ -1,6 +1,7 @@
 import logging
 from typing import TYPE_CHECKING
 
+import torch
 from haystack.nodes import TransformersTranslator
 from haystack.nodes.base import BaseComponent
 from langdetect import detect
@@ -75,6 +76,7 @@ class CustomBatchTranslator(BaseComponent):
 
             batch = i // self.batch_size + 1
             logger.info(f"Batch {batch}/{batches} translated")
+            torch.cuda.empty_cache()
 
         for translated_document, document in zip(
             translated_documents, documents

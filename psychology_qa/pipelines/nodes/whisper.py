@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 import librosa
+import torch
 from haystack.nodes.base import BaseComponent
 from haystack.schema import Document
 from transformers import pipeline
@@ -43,6 +44,7 @@ class WhisperTranscriber(BaseComponent):
                 Document(content=result["text"].strip(), meta=meta)
             )
             logger.info(f"Audio file {i}/{len(file_paths)} transcribed")
+            torch.cuda.empty_cache()
 
         del self.pipe
         logger.debug("Freed VRAM")
