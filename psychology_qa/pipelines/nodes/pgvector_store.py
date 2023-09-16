@@ -1,8 +1,12 @@
+import logging
+
 from haystack.nodes.base import BaseComponent
 from haystack.schema import Document
 
 from database import init_database
 from models import Author, Book, EmbeddingDocument, MetaDocument
+
+logger = logging.getLogger(__name__)
 
 
 class PgvectorStore(BaseComponent):
@@ -23,6 +27,8 @@ class PgvectorStore(BaseComponent):
         return self.run(documents)
 
     def write_documents(self, documents: list["Document"], **_) -> None:
+        batches = len(documents) // self.batch_size + 1
+
         for i in range(0, len(documents), self.batch_size):
             embedding_batch = []
             meta_document_batch = []
@@ -56,6 +62,9 @@ class PgvectorStore(BaseComponent):
                 MetaDocument.insert_many(
                     meta_document_batch
                 ).on_conflict_ignore().execute()
+
+            batch = i // self.batch_size + 1
+            logger.info(f"Batch {batch}/{batches} inserted")
 
     def query_by_embedding(
         self, query_emb: list, top_k: int = 10, **_

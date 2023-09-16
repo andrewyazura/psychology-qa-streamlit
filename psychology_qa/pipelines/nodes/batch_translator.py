@@ -1,3 +1,4 @@
+import logging
 from typing import TYPE_CHECKING
 
 from haystack.nodes import TransformersTranslator
@@ -6,6 +7,8 @@ from langdetect import detect
 
 if TYPE_CHECKING:
     from haystack.schema import Document
+
+logger = logging.getLogger(__name__)
 
 
 class CustomBatchTranslator(BaseComponent):
@@ -19,10 +22,10 @@ class CustomBatchTranslator(BaseComponent):
         self.to_language = to_language
 
     def init_model(self, from_language: str) -> None:
-        self.translator = TransformersTranslator(
-            model_name_or_path="Helsinki-NLP/opus-mt-"
-            f"{from_language}-{self.to_language}"
-        )
+        model_name = f"Helsinki-NLP/opus-mt-{from_language}-{self.to_language}"
+        self.translator = TransformersTranslator(model_name_or_path=model_name)
+
+        logger.info(f"Init translator using model {model_name}")
 
     def run(
         self,
@@ -31,6 +34,7 @@ class CustomBatchTranslator(BaseComponent):
     ) -> tuple[dict, str]:
         if self.from_language == "detect":
             detected_language = detect(query or documents[0].content)
+            logger.info(f"Detected language: {detected_language}")
 
             if detected_language == self.to_language:
                 return {"documents": documents}, "output_1"
@@ -47,6 +51,8 @@ class CustomBatchTranslator(BaseComponent):
             output = {"documents": self.translate(documents)}
 
         del self.translator
+        logger.debug("Freed VRAM")
+
         return output, "output_1"
 
     def run_batch(
@@ -58,6 +64,7 @@ class CustomBatchTranslator(BaseComponent):
 
     def translate(self, documents: list["Document"]) -> list["Document"]:
         translated_documents: list["Document"] = []
+        batches = len(documents) // self.batch_size + 1
 
         for i in range(0, len(documents), self.batch_size):
             translated_documents.extend(
@@ -65,6 +72,9 @@ class CustomBatchTranslator(BaseComponent):
                     documents=documents[i : i + self.batch_size]
                 )
             )
+
+            batch = i // self.batch_size + 1
+            logger.info(f"Batch {batch}/{batches} translated")
 
         for translated_document, document in zip(
             translated_documents, documents

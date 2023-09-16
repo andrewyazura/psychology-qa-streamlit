@@ -20,11 +20,6 @@ def init_logging() -> None:
                     "stream": "ext://sys.stdout",
                 }
             },
-            "loggers": {
-                "haystack": {
-                    "handlers": ["default"],
-                    "level": logging["level"],
-                }
-            },
+            "root": {"handlers": ["default"], "level": logging["level"]},
         }
     )
