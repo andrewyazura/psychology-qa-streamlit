@@ -73,13 +73,12 @@ class UploadBookView(BaseView):
     def _process_data(
         self, uploaded_files: list, whisper_model_name: str | None = None
     ) -> None:
-        book = self._create_book()
-
-        if not book:
-            return
-
         if not uploaded_files:
             st.error("At least one file is required")
+            return
+
+        book = self._create_book()
+        if not book:
             return
 
         st.divider()
