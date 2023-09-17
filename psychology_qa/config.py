@@ -53,6 +53,12 @@ with env.prefixed("EMBEDDING_"):
 
 # optional
 
+with env.prefixed("PREFIX_"):
+    prefixes = {
+        "query": env.str("QUERY", ""),
+        "passage": env.str("PASSAGE", ""),
+    }
+
 with env.prefixed("TRANSLATOR_"):
     translator = {
         "enabled": env.bool("ENABLED", False),

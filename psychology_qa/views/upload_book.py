@@ -44,7 +44,7 @@ class UploadBookView(BaseView):
         if not st.button("Upload book", use_container_width=True):
             return
 
-        self._process_data_with_status(files)
+        self._process_data(files)
 
     def _upload_audiobook(self) -> None:
         model_name = st.selectbox(
@@ -68,9 +68,9 @@ class UploadBookView(BaseView):
         if not st.button("Upload audiobook", use_container_width=True):
             return
 
-        self._process_data_with_status(audio_files, model_name)
+        self._process_data(audio_files, model_name)
 
-    def _process_data_with_status(
+    def _process_data(
         self, uploaded_files: list, whisper_model_name: str | None = None
     ) -> None:
         book = self._create_book()

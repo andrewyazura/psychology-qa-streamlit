@@ -1,15 +1,22 @@
 from haystack.nodes import EmbeddingRetriever, SentenceTransformersRanker
 from haystack.pipelines import Pipeline
 
-from config import embedding, ranker, store_batch_size, translator
+from config import embedding, prefixes, ranker, store_batch_size, translator
 from pipelines.nodes import CustomBatchTranslator, PgvectorStore
+from pipelines.nodes.custom_preprocessor import CustomPreProcessor
 from utils import cache_resource
 
 
 @cache_resource()
 def get_querying_pipeline() -> Pipeline:
     pipe = Pipeline()
-    last_node = "Query"
+
+    last_node = "PreProcessor"
+    pipe.add_node(
+        component=CustomPreProcessor(prefix=prefixes["query"]),
+        name=last_node,
+        inputs=["Query"],
+    )
 
     if translator["enabled"]:
         last_node = "Translator"
@@ -20,7 +27,7 @@ def get_querying_pipeline() -> Pipeline:
                 batch_size=translator["batch_size"],
             ),
             name=last_node,
-            inputs=["Query"],
+            inputs=["PreProcessor"],
         )
 
     pipe.add_node(
