@@ -74,6 +74,7 @@ used are either built or extended by me.
 ## To Do
 
 - [x] Authentication
+- [x] Show source of answer on chat page
 - [ ] Gather feedback on answers to fine-tune model later
 - [ ] Allow revealing more text after receiving answer
-- [ ] Show source of answer on chat page
+- [ ] Persist answers between sessions (?)

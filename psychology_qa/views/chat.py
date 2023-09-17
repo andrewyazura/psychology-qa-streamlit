@@ -33,7 +33,13 @@ class ChatView(BaseView):
             )
 
         for document in result["documents"]:
-            messages.append({"role": "assistant", "content": document.content})
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": document.content,
+                    "meta": document.meta,
+                }
+            )
 
         for message in messages[1:]:
             self._display_message(message)
@@ -46,7 +52,15 @@ class ChatView(BaseView):
 
     def _display_message(self, message: dict[str, str]) -> None:
         with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+            st.write(message["content"])
+
+            meta = message.get("meta", {})
+
+            if book := meta.get("book_title"):
+                st.caption(f"from {book}")
+
+            if author := meta.get("author_name"):
+                st.caption(f"by {author}")
 
     def _query_data(
         self, init_kwargs: dict | None = None, run_kwargs: dict | None = None

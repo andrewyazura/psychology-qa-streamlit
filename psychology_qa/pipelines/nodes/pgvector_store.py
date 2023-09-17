@@ -75,8 +75,8 @@ class PgvectorStore(BaseComponent):
                 MetaDocument.content,
                 MetaDocument.meta,
                 EmbeddingDocument.embedding,
-                Book.title.alias("book_title"),
-                Author.name.alias("author_name"),
+                Book.title,
+                Author.name,
             )
             .join(Book)
             .join(Author)
@@ -90,7 +90,11 @@ class PgvectorStore(BaseComponent):
             Document(
                 id=meta_document.id,
                 content=meta_document.content,
-                meta={"db_document": meta_document},
+                meta={
+                    "book_title": meta_document.book.title,
+                    "author_name": meta_document.book.author.name,
+                    **meta_document.meta,
+                },
                 embedding=meta_document.embedding_document.embedding,
             )
             for meta_document in meta_documents
