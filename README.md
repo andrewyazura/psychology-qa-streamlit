@@ -77,4 +77,6 @@ used are either built or extended by me.
 - [x] Show source of answer on chat page
 - [ ] Gather feedback on answers to fine-tune model later
 - [ ] Allow revealing more text after receiving answer
+- [ ] Add filters (by book, author, language) on querying page
+- [ ] Don't show answers that are close to each other or are partial duplicates
 - [ ] Persist answers between sessions (?)
