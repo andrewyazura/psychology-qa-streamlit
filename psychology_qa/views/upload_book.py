@@ -118,7 +118,10 @@ class UploadBookView(BaseView):
 
                     pipeline.run(
                         file_paths=temporary_file_paths,
-                        meta={"book_id": book.id, "from_audio": True},
+                        meta={
+                            "book_id": book.id,
+                            "from_audio": bool(whisper_model_name),
+                        },
                     )
 
                 except:
