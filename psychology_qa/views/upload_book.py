@@ -132,6 +132,11 @@ class UploadBookView(BaseView):
                     book.deep_delete()
                     raise
 
+                finally:
+                    from pipelines import empty_memory
+
+                    empty_memory(pipeline)
+
             diff = self._get_formatted_timespan(start_time)
             logger.info(f"Data processed. Finished in {diff}")
 
