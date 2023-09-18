@@ -44,8 +44,7 @@ def get_indexing_pipeline(
         DocxToTextConverter,
     ]
     converter_kwargs = {
-        "remove_numeric_tables": True,
-        "valid_languages": [translator["base_language"], language],
+        "valid_languages": [translator["base_language"], language]
     }
 
     for i, converter_class in enumerate(converters, start=1):

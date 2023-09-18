@@ -57,7 +57,7 @@ class LibraryView(BaseView):
                 continue
 
             for book in author.books:
-                with st.expander(book.title):
+                with st.expander(book.title, expanded=True):
                     col1, col2, col3 = st.columns(3)
 
                     with col1:
