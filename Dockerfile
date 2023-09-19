@@ -37,7 +37,9 @@ USER user
 WORKDIR /home/user
 
 ENV PATH="/opt/venv/bin:$PATH"
-RUN python -c "import nltk; nltk.download('punkt')"
+RUN python -c "import nltk; nltk.download('punkt')" \
+    transformers-cli download \
+    --cache-dir ${SENTENCE_TRANSFORMERS_HOME} ${EMBEDDING_MODEL}
 
 CMD ["streamlit", "run", "psychology_qa/app.py"]
 
