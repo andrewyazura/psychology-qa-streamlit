@@ -36,10 +36,14 @@ RUN useradd -m -u 1000 user
 USER user
 WORKDIR /home/user
 
+ARG SENTENCE_TRANSFORMERS_HOME
+ARG EMBEDDING_MODEL
 ENV PATH="/opt/venv/bin:$PATH"
-RUN python -c "import nltk; nltk.download('punkt')" \
-    transformers-cli download \
-    --cache-dir ${SENTENCE_TRANSFORMERS_HOME} ${EMBEDDING_MODEL}
+
+RUN python -c "import nltk; nltk.download('punkt')" && \
+    python -c "from sentence_transformers import SentenceTransformer; \
+    model = SentenceTransformer('${EMBEDDING_MODEL}', \
+    cache_folder='${SENTENCE_TRANSFORMERS_HOME}')"
 
 CMD ["streamlit", "run", "psychology_qa/app.py"]
 
