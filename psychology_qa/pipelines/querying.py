@@ -1,7 +1,7 @@
-from haystack.nodes import EmbeddingRetriever, SentenceTransformersRanker
+from haystack.nodes import EmbeddingRetriever
 from haystack.pipelines import Pipeline
 
-from config import embedding, prefixes, ranker, store_batch_size, translator
+from config import embedding, prefixes, store_batch_size, translator
 from pipelines.nodes import CustomBatchTranslator, PgvectorStore
 from pipelines.nodes.custom_preprocessor import CustomPreProcessor
 from utils import cache_resource
@@ -37,14 +37,5 @@ def get_querying_pipeline() -> Pipeline:
         name="Retriever",
         inputs=[last_node],
     )
-
-    if ranker["enabled"]:
-        pipe.add_node(
-            component=SentenceTransformersRanker(
-                model_name_or_path=ranker["model"], top_k=ranker["top_k"]
-            ),
-            name="Ranker",
-            inputs=["Retriever"],
-        )
 
     return pipe

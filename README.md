@@ -53,7 +53,7 @@ Querying and data-processing pipelines are built on top of
 [Haystack](https://haystack.deepset.ai/). Many of the nodes
 used are either built or extended by me.
 
-> Note that Translator and Ranker nodes are optional and
+> Note that Translator is an optional node and
 > can be disabled in `.app.env`
 
 <details>

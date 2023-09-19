@@ -66,13 +66,4 @@ with env.prefixed("TRANSLATOR_"):
         "batch_size": env.int("BATCH_SIZE", 1),
     }
 
-
-with env.prefixed("RANKER_"):
-    ranker = {
-        "enabled": env.bool("ENABLED", False),
-        "model": env.str("MODEL", "cross-encoder/ms-marco-MiniLM-L-12-v2"),
-        "top_k": env.int("TOP_K", 3),
-    }
-
-
 whisper_batch_size = env.int("WHISPER_BATCH_SIZE", 1)
