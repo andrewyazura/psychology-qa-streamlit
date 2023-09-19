@@ -71,12 +71,7 @@ class PgvectorStore(BaseComponent):
     ) -> list["Document"]:
         meta_documents = (
             MetaDocument.select(
-                MetaDocument.id,
-                MetaDocument.content,
-                MetaDocument.meta,
-                EmbeddingDocument.embedding,
-                Book.title,
-                Author.name,
+                MetaDocument, Book, Author, EmbeddingDocument.embedding
             )
             .join(Book)
             .join(Author)
@@ -91,11 +86,17 @@ class PgvectorStore(BaseComponent):
                 id=meta_document.id,
                 content=meta_document.content,
                 meta={
-                    "book_title": meta_document.book.title,
-                    "author_name": meta_document.book.author.name,
                     **meta_document.meta,
+                    "book": {
+                        "id": meta_document.book.id,
+                        "title": meta_document.book.title,
+                    },
+                    "author": {
+                        "id": meta_document.author.id,
+                        "name": meta_document.author.name,
+                    },
                 },
-                embedding=meta_document.embedding_document.embedding,
+                embedding=meta_document["embedding"],
             )
-            for meta_document in meta_documents
+            for meta_document in meta_documents.iterator()
         ]
