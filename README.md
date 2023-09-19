@@ -75,8 +75,10 @@ used are either built or extended by me.
 
 - [x] Authentication
 - [x] Show source of answer on chat page
-- [ ] Gather feedback on answers to fine-tune model later
-- [ ] Allow revealing more text after receiving answer
-- [ ] Add filters (by book, author, language) on querying page
+- [x] Allow deleting passages from database
+- [ ] Preprocess PDFs to remove headers and footers, remove chapter names, etc
 - [ ] Don't show answers that are close to each other or are partial duplicates
+- [ ] Allow revealing more text after receiving answer
+- [ ] Add filters (by book, author, language) on chat page
+- [ ] Gather feedback on answers to fine-tune model later
 - [ ] Persist answers between sessions (?)
