@@ -12,6 +12,8 @@ tags:
     - "Semantic search"
 ---
 
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct-single.svg)](https://stand-with-ukraine.pp.ua)
+
 # Psychology Q&A
 
 This project was built for the purpose of indexing a dataset of
