@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 from typing import Any
 
@@ -69,6 +70,7 @@ class ChatView(BaseView):
         self, init_kwargs: dict | None = None, run_kwargs: dict | None = None
     ) -> dict[str, Any]:
         import torch
+
         from pipelines.querying import get_querying_pipeline
 
         pipeline = get_querying_pipeline(**(init_kwargs or {}))
@@ -96,7 +98,7 @@ class ChatView(BaseView):
                 with col1:
                     st.button(
                         "👍",
-                        key=f"like-{answer.id}",
+                        key=f"like-{answer.id}-{time.time()}",
                         on_click=self._like_answer,
                         args=(answer.id,),
                     )
@@ -104,7 +106,7 @@ class ChatView(BaseView):
                 with col2:
                     st.button(
                         "👎",
-                        key=f"dislike-{answer.id}",
+                        key=f"dislike-{answer.id}-{time.time()}",
                         on_click=self._dislike_answer,
                         args=(answer.id,),
                     )
@@ -112,7 +114,7 @@ class ChatView(BaseView):
                 with col3:
                     st.button(
                         "🗑",
-                        key=f"delete-{answer.id}",
+                        key=f"delete-{answer.id}-{time.time()}",
                         on_click=self._delete_answer,
                         args=(answer.id,),
                     )
