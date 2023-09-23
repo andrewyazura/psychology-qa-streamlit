@@ -89,10 +89,7 @@ def get_indexing_pipeline(
         )
 
     pipe.add_node(
-        component=EmbeddingRetriever(
-            document_store=PgvectorStore(batch_size=store_batch_size),
-            **embedding,
-        ),
+        component=EmbeddingRetriever(**embedding),
         name="Retriever",
         inputs=[last_node],
     )
