@@ -4,6 +4,7 @@ from haystack.pipelines import Pipeline
 from config import embedding, prefixes, store_batch_size, translator
 from pipelines.nodes import CustomBatchTranslator, PgvectorStore
 from pipelines.nodes.custom_preprocessor import CustomPreProcessor
+from pipelines.nodes.custom_ranker import CustomRanker
 from utils import cache_resource
 
 
@@ -36,6 +37,10 @@ def get_querying_pipeline() -> Pipeline:
         ),
         name="Retriever",
         inputs=[last_node],
+    )
+
+    pipe.add_node(
+        component=CustomRanker(), name="Ranker", inputs=["Retriever"]
     )
 
     return pipe
