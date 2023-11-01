@@ -16,7 +16,6 @@ class PgvectorStore(BaseComponent):
     similarity = "dot_product"
 
     def __init__(self, batch_size: int) -> None:
-        self.database = init_database()
         self.batch_size = batch_size
 
     def run(self, documents: list["Document"]) -> tuple[dict, str]:
@@ -27,6 +26,8 @@ class PgvectorStore(BaseComponent):
         return self.run(documents)
 
     def write_documents(self, documents: list["Document"], **_) -> None:
+        self.database = init_database()
+
         batches = len(documents) // self.batch_size + 1
 
         for i in range(0, len(documents), self.batch_size):
@@ -69,6 +70,8 @@ class PgvectorStore(BaseComponent):
     def query_by_embedding(
         self, query_emb: list, top_k: int = 10, **_
     ) -> list["Document"]:
+        self.database = init_database()
+
         meta_documents = (
             MetaDocument.select(MetaDocument, Book, Author)
             .join(Book)
