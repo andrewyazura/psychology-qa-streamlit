@@ -72,13 +72,18 @@ class PgvectorStore(BaseComponent):
     ) -> list["Document"]:
         self.database = init_database()
 
-        meta_documents = (
+        order_by_query = EmbeddingDocument.embedding.max_inner_product(
+            query_emb
+        )
+
+        top_documents_per_book = (
             MetaDocument.select(MetaDocument, Book, Author)
             .join(Book)
             .join(Author)
             .switch(MetaDocument)
             .join(EmbeddingDocument)
-            .order_by(EmbeddingDocument.embedding.max_inner_product(query_emb))
+            .order_by(Book.id, order_by_query)
+            .distinct(Book.id)
             .limit(top_k)
         )
 
@@ -98,5 +103,5 @@ class PgvectorStore(BaseComponent):
                     },
                 },
             )
-            for meta_document in meta_documents.iterator()
+            for meta_document in top_documents_per_book.iterator()
         ]
