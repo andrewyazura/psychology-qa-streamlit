@@ -54,4 +54,4 @@ class BaseView(ABC):
 
         if selected_view != st.session_state.selected_view:
             st.session_state.selected_view = selected_view
-            st.experimental_rerun()
+            st.rerun()
