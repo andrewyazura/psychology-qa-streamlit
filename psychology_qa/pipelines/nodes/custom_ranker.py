@@ -9,8 +9,6 @@ class CustomRanker(BaseComponent):
         pass
 
     def run(self, documents: list[Document] | None = None) -> tuple[dict, str]:
-        print(documents)
-
         return {"documents": documents}, "output_1"
 
     def run_batch(

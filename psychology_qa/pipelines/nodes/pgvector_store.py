@@ -8,6 +8,8 @@ from models import Author, Book, EmbeddingDocument, MetaDocument
 
 logger = logging.getLogger(__name__)
 
+MAX_DISTANCE = 4
+
 
 class PgvectorStore(BaseComponent):
     outgoing_edges = 1
@@ -72,27 +74,28 @@ class PgvectorStore(BaseComponent):
     ) -> list["Document"]:
         self.database = init_database()
 
-        order_by_query = EmbeddingDocument.embedding.max_inner_product(
-            query_emb
-        )
-
-        top_documents_per_book = (
+        meta_documents = (
             MetaDocument.select(MetaDocument, Book, Author)
             .join(Book)
             .join(Author)
             .switch(MetaDocument)
             .join(EmbeddingDocument)
-            .order_by(Book.id, order_by_query)
-            .distinct(Book.id)
-            .limit(top_k)
+            .order_by(EmbeddingDocument.embedding.max_inner_product(query_emb))
+            .iterator()
         )
 
-        return [
-            Document(
+        results = []
+
+        for meta_document in meta_documents:
+            if len(results) == top_k:
+                break
+
+            data = Document(
                 id=meta_document.id,
                 content=meta_document.content,
                 meta={
                     **meta_document.meta,
+                    "split_id": meta_document.split_id,
                     "book": {
                         "id": meta_document.book.id,
                         "title": meta_document.book.title,
@@ -103,5 +106,17 @@ class PgvectorStore(BaseComponent):
                     },
                 },
             )
-            for meta_document in top_documents_per_book.iterator()
-        ]
+
+            for result in results:
+                if result.meta["book"]["id"] == data.meta["book"]["id"]:
+                    difference = (
+                        result.meta["split_id"] - data.meta["split_id"]
+                    )
+
+                    if abs(difference) <= MAX_DISTANCE:
+                        break
+
+            else:
+                results.append(data)
+
+        return results

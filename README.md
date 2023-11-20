@@ -73,13 +73,26 @@ used are either built or extended by me.
 
 <img src="./assets/pages/chat.png" alt="Chat page with example answers" width=400> <img src="./assets/pages/library.png" alt="List of authors and book profiles" width=400> <img src="./assets/pages/upload.png" alt="Upload page for books" width=400> <img src="./assets/pages/upload_audio.png" alt="Upload page for audio" width=400>
 
+## Development
+
+When using `docker-compose.dev.yaml`, I recommend pre-loading the embedding model:
+
+```python
+from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer('<MODEL_NAME>', cache_folder='~/.cache')
+```
+
+In the production version, the model is stored inside of the container, but for development purposes,
+there is a bind to `~/.cache`.
+
 ## To Do
 
 - [x] Authentication
 - [x] Show source of answer on chat page
 - [x] Allow deleting passages from database
 - [ ] Preprocess PDFs to remove headers and footers, remove chapter names, etc
-- [ ] Don't show answers that are close to each other or are partial duplicates
+- [x] Don't show answers that are close to each other or are partial duplicates
 - [ ] Allow revealing more text after receiving answer
 - [ ] Add filters (by book, author, language) on chat page
 - [ ] Gather feedback on answers to fine-tune model later
